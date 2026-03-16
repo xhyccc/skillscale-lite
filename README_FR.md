@@ -1,12 +1,12 @@
-# SkillScale Lite — Infrastructure distribuée d'agent « Skill-as-a-Service »
+# 🚀 SkillScale Lite — Infrastructure distribuée d'agent « Skill-as-a-Service »
 
 > [English](README.md) | [简体中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JP.md) | [Español](README_ES.md) | [Français](README_FR.md)
 
 ---
 
-SkillScale Lite est une infrastructure distribuée haute performance pour exécuter des compétences d'agents IA à grande échelle. Elle unifie les protocoles MCP (Model Context Protocol) et A2A (Google Agent-to-Agent) via une passerelle Rust et Kafka (Redpanda), avec serveurs de compétences natifs et isolation sandbox OS optionnelle.
+✨ SkillScale Lite est une infrastructure distribuée haute performance pour exécuter des compétences d'agents IA à grande échelle. Elle unifie les protocoles MCP (Model Context Protocol) et A2A (Google Agent-to-Agent) via une passerelle Rust et Kafka (Redpanda), avec serveurs de compétences natifs et isolation sandbox OS optionnelle.
 
-## Principes fondamentaux
+## 🧠 Principes fondamentaux
 
 SkillScale Lite résout le problème de fragmentation des protocoles dans les écosystèmes d'agents IA. Les clients MCP (Claude Desktop, Cursor, etc.) et les agents A2A (Google, plateformes d'entreprise) utilisent des protocoles différents, tandis que les backends d'exécution nécessitent une interface unifiée. SkillScale Lite unifie cela avec une architecture à trois couches :
 
@@ -15,11 +15,11 @@ Couche protocole → Couche passerelle → Couche exécution
 (MCP/A2A)        (Rust, traduction)   (Kafka + serveurs de compétences + LLM)
 ```
 
-- Nouveau protocole = ajouter un handler HTTP dans la passerelle
-- Nouvelle compétence = ajouter un dossier dans skills/ et redémarrer
-- Scalabilité = ajouter des processus serveurs de compétences (Kafka distribue)
+- ➕ Nouveau protocole = ajouter un handler HTTP dans la passerelle
+- 📂 Nouvelle compétence = ajouter un dossier dans skills/ et redémarrer
+- 📈 Scalabilité = ajouter des processus serveurs de compétences (Kafka distribue)
 
-## Flux de requête
+## 🔄 Flux de requête
 
 ```
 Client ──▶ Passerelle Rust ──▶ Redpanda (Kafka) ──▶ Serveur de compétences
@@ -31,7 +31,7 @@ Client ──▶ Passerelle Rust ──▶ Redpanda (Kafka) ──▶ Serveur de
                                             └── return result → Kafka → Gateway → Client
 ```
 
-## Granularité d'appel
+## 🎯 Granularité d'appel
 
 | Granularité   | Nom outil MCP                | Endpoint A2A                              | Routage                        |
 |--------------|------------------------------|--------------------------------------------|-------------------------------|
@@ -40,7 +40,7 @@ Client ──▶ Passerelle Rust ──▶ Redpanda (Kafka) ──▶ Serveur de
 
 A2A ne supporte que la granularité grossière ; MCP les deux.
 
-## Architecture
+## 🏗️ Architecture
 
 ```
 ┌───────────────┐
@@ -65,16 +65,16 @@ A2A ne supporte que la granularité grossière ; MCP les deux.
 - Redpanda : Broker Kafka, port 9092
 - Serveur de compétences : Rust + Python, consomme topic Kafka, AGENTS.md + LLM pour sélection
 
-## Déploiement
+## 🚢 Déploiement
 
-- Les serveurs de compétences s'exécutent comme processus natifs, pas en Docker
-- Docker inclut seulement Redpanda, Console et Passerelle
-- Les serveurs de compétences sont lancés nativement via run_all.sh
-- Docker Compose n'inclut pas de services skill-server
+- 🖥️ Les serveurs de compétences s'exécutent comme processus natifs, pas en Docker
+- 🐳 Docker inclut seulement Redpanda, Console et Passerelle
+- 🔧 Les serveurs de compétences sont lancés nativement via run_all.sh
+- 📦 Docker Compose n'inclut pas de services skill-server
 
-## Démarrage rapide
+## ⚡ Démarrage rapide
 
-### Prérequis
+### 📋 Prérequis
 
 | Dépendance         | macOS                  | Ubuntu/Debian           |
 |--------------------|-----------------------|-------------------------|
@@ -84,20 +84,20 @@ A2A ne supporte que la granularité grossière ; MCP les deux.
 
 > Docker est seulement nécessaire pour Redpanda et Passerelle. Les serveurs de compétences compilent et s'exécutent nativement.
 
-### Lancement
+### 🚀 Lancement
 
 ```bash
 ./run_all.sh
 ```
 
-- Crée .venv et installe dépendances Python
-- Compile le binaire Rust du serveur de compétences
-- Lance Docker (Redpanda + Passerelle)
-- Lance processus natifs de serveur de compétences (un par catégorie)
-- Attend Passerelle
-- Exécute scripts demo pour valider
+- 🐍 Crée .venv et installe dépendances Python
+- 🦀 Compile le binaire Rust du serveur de compétences
+- 🐳 Lance Docker (Redpanda + Passerelle)
+- ⚙️ Lance processus natifs de serveur de compétences (un par catégorie)
+- ⏳ Attend Passerelle
+- ✅ Exécute scripts demo pour valider
 
-## Structure du projet
+## 📁 Structure du projet
 
 ```
 SkillScale Lite/
@@ -116,7 +116,7 @@ SkillScale Lite/
 └── .env                        # Clés API et configuration
 ```
 
-## Configuration
+## ⚙️ Configuration
 
 Toutes les compétences utilisent skills/llm_utils.py, qui lit .env.
 
@@ -128,7 +128,7 @@ Toutes les compétences utilisent skills/llm_utils.py, qui lit .env.
 
 LLM_PROVIDER=azure|openai|zhipu pour sélectionner.
 
-## License
+## 📄 License
 
 MIT
 

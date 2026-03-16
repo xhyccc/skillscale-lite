@@ -1,12 +1,12 @@
-# SkillScale Lite — 分布式技能即服务代理基础设施
+# 🚀 SkillScale Lite — 分布式技能即服务代理基础设施
 
 > [English](README.md) | [简体中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JP.md) | [Español](README_ES.md) | [Français](README_FR.md)
 
 ---
 
-SkillScale Lite 是高性能分布式 AI Agent 技能执行基础设施。它通过 Rust Gateway + Kafka（Redpanda）统一支持 MCP（Model Context Protocol）和 A2A（Google Agent-to-Agent）两大协议，技能服务器原生进程启动，支持 OS 级沙箱隔离。
+✨ SkillScale Lite 是高性能分布式 AI Agent 技能执行基础设施。它通过 Rust Gateway + Kafka（Redpanda）统一支持 MCP（Model Context Protocol）和 A2A（Google Agent-to-Agent）两大协议，技能服务器原生进程启动，支持 OS 级沙箱隔离。
 
-## 核心原理
+## 🧠 核心原理
 
 SkillScale Lite 解决了 AI Agent 协议碎片化问题。MCP 客户端（Claude Desktop、Cursor 等）和 A2A 客户端（Google、企业平台）协议不同，技能执行后端需要统一接口。SkillScale Lite 用三层架构统一：
 
@@ -15,11 +15,11 @@ SkillScale Lite 解决了 AI Agent 协议碎片化问题。MCP 客户端（Claud
 (MCP/A2A)    (Rust协议翻译)   (Kafka + 技能服务器 + LLM)
 ```
 
-- 新协议 = Gateway 增加 HTTP handler
-- 新技能 = skills/ 下加目录，重启即可
-- 扩展 = 增加技能服务器进程（Kafka 自动分发）
+- ➕ 新协议 = Gateway 增加 HTTP handler
+- 📂 新技能 = skills/ 下加目录，重启即可
+- 📈 扩展 = 增加技能服务器进程（Kafka 自动分发）
 
-## 请求流转
+## 🔄 请求流转
 
 ```
 客户端 ──▶ Rust Gateway ──▶ Redpanda (Kafka) ──▶ 技能服务器
@@ -31,7 +31,7 @@ SkillScale Lite 解决了 AI Agent 协议碎片化问题。MCP 客户端（Claud
                                             └── return result → Kafka → Gateway → Client
 ```
 
-## 调用粒度
+## 🎯 调用粒度
 
 | 粒度         | MCP 工具名                | A2A 端点                                 | 路由方式                |
 |--------------|---------------------------|------------------------------------------|-------------------------|
@@ -40,7 +40,7 @@ SkillScale Lite 解决了 AI Agent 协议碎片化问题。MCP 客户端（Claud
 
 A2A 只支持粗粒度，MCP 支持两种。
 
-## 架构
+## 🏗️ 架构
 
 ```
 ┌───────────────┐
@@ -64,16 +64,16 @@ A2A 只支持粗粒度，MCP 支持两种。
 - Redpanda: Kafka Broker，端口 9092
 - 技能服务器: Rust + Python，消费 Kafka topic，AGENTS.md + LLM 匹配技能
 
-## 部署
+## 🚢 部署
 
-- 技能服务器以原生进程运行，不用 Docker
-- Docker 只包含 Redpanda、Console、Gateway
-- 技能服务器由 run_all.sh 原生启动
-- Docker Compose 不包含 skill-server 服务
+- 🖥️ 技能服务器以原生进程运行，不用 Docker
+- 🐳 Docker 只包含 Redpanda、Console、Gateway
+- 🔧 技能服务器由 run_all.sh 原生启动
+- 📦 Docker Compose 不包含 skill-server 服务
 
-## 快速启动
+## ⚡ 快速启动
 
-### 依赖
+### 📋 依赖
 
 | 依赖项           | macOS                  | Ubuntu/Debian           |
 |------------------|-----------------------|-------------------------|
@@ -83,20 +83,20 @@ A2A 只支持粗粒度，MCP 支持两种。
 
 > Docker 只用于 Redpanda 和 Gateway。技能服务器原生编译运行。
 
-### 启动
+### 🚀 启动
 
 ```bash
 ./run_all.sh
 ```
 
-- 创建 .venv 并安装 Python 依赖
-- 编译技能服务器 Rust 二进制
-- 启动 Docker（Redpanda + Gateway）
-- 原生启动技能服务器进程（每个分类一个）
-- 等待 Gateway 就绪
-- 运行 demo 脚本验证系统
+- 🐍 创建 .venv 并安装 Python 依赖
+- 🦀 编译技能服务器 Rust 二进制
+- 🐳 启动 Docker（Redpanda + Gateway）
+- ⚙️ 原生启动技能服务器进程（每个分类一个）
+- ⏳ 等待 Gateway 就绪
+- ✅ 运行 demo 脚本验证系统
 
-## 项目结构
+## 📁 项目结构
 
 ```
 SkillScale Lite/
@@ -115,7 +115,7 @@ SkillScale Lite/
 └── .env                        # API 密钥与配置
 ```
 
-## 配置
+## ⚙️ 配置
 
 所有技能共用 skills/llm_utils.py，读取 .env。
 
@@ -127,7 +127,7 @@ SkillScale Lite/
 
 设置 LLM_PROVIDER=azure|openai|zhipu 选择模型。
 
-## License
+## 📄 License
 
 MIT
 

@@ -1,12 +1,12 @@
-# SkillScale Lite — 分散型スキル・アズ・サービス エージェント基盤
+# 🚀 SkillScale Lite — 分散型スキル・アズ・サービス エージェント基盤
 
 > [English](README.md) | [简体中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JP.md) | [Español](README_ES.md) | [Français](README_FR.md)
 
 ---
 
-SkillScale Lite は高性能分散型 AI Agent スキル実行基盤です。Rust Gateway + Kafka（Redpanda）で MCP（Model Context Protocol）と A2A（Google Agent-to-Agent）両方のプロトコルを統一し、スキルサーバはネイティブプロセスで起動、OSレベルのサンドボックスもサポート。
+✨ SkillScale Lite は高性能分散型 AI Agent スキル実行基盤です。Rust Gateway + Kafka（Redpanda）で MCP（Model Context Protocol）と A2A（Google Agent-to-Agent）両方のプロトコルを統一し、スキルサーバはネイティブプロセスで起動、OSレベルのサンドボックスもサポート。
 
-## コア原則
+## 🧠 コア原則
 
 SkillScale Lite は AI Agent のプロトコル断片化問題を解決します。MCP クライアント（Claude Desktop、Cursor 等）と A2A クライアント（Google、企業プラットフォーム）はプロトコルが異なり、スキル実行バックエンドは統一インターフェースが必要です。SkillScale Lite は三層アーキテクチャで統一：
 
@@ -15,11 +15,11 @@ SkillScale Lite は AI Agent のプロトコル断片化問題を解決します
 (MCP/A2A)     (Rustプロトコル変換) (Kafka + スキルサーバ + LLM)
 ```
 
-- 新プロトコル = Gateway に HTTP handler 追加
-- 新スキル = skills/ にディレクトリ追加、再起動
-- 拡張 = スキルサーバプロセス追加（Kafka 自動分散）
+- ➕ 新プロトコル = Gateway に HTTP handler 追加
+- 📂 新スキル = skills/ にディレクトリ追加、再起動
+- 📈 拡張 = スキルサーバプロセス追加（Kafka 自動分散）
 
-## リクエストフロー
+## 🔄 リクエストフロー
 
 ```
 クライアント ──▶ Rust Gateway ──▶ Redpanda (Kafka) ──▶ スキルサーバ
@@ -31,7 +31,7 @@ SkillScale Lite は AI Agent のプロトコル断片化問題を解決します
                                             └── return result → Kafka → Gateway → Client
 ```
 
-## 呼び出し粒度
+## 🎯 呼び出し粒度
 
 | 粒度         | MCP ツール名                | A2A エンドポイント                        | ルーティング                |
 |--------------|-----------------------------|--------------------------------------------|----------------------------|
@@ -40,7 +40,7 @@ SkillScale Lite は AI Agent のプロトコル断片化問題を解決します
 
 A2A は粗粒度のみ、MCP は両方対応。
 
-## アーキテクチャ
+## 🏗️ アーキテクチャ
 
 ```
 ┌───────────────┐
@@ -64,16 +64,16 @@ A2A は粗粒度のみ、MCP は両方対応。
 - Redpanda: Kafka Broker、ポート 9092
 - スキルサーバ: Rust + Python、Kafka topic 消費、AGENTS.md + LLM でスキル選択
 
-## デプロイ
+## 🚢 デプロイ
 
-- スキルサーバはネイティブプロセスで実行、Docker不要
-- Docker には Redpanda・Console・Gateway のみ
-- スキルサーバは run_all.sh でネイティブ起動
-- Docker Compose に skill-server サービスなし
+- 🖥️ スキルサーバはネイティブプロセスで実行、Docker不要
+- 🐳 Docker には Redpanda・Console・Gateway のみ
+- 🔧 スキルサーバは run_all.sh でネイティブ起動
+- 📦 Docker Compose に skill-server サービスなし
 
-## クイックスタート
+## ⚡ クイックスタート
 
-### 依存
+### 📋 依存
 
 | 依存項目           | macOS                  | Ubuntu/Debian           |
 |--------------------|-----------------------|-------------------------|
@@ -83,20 +83,20 @@ A2A は粗粒度のみ、MCP は両方対応。
 
 > Docker は Redpanda・Gateway のみ。スキルサーバはネイティブでビルド・実行。
 
-### 起動
+### 🚀 起動
 
 ```bash
 ./run_all.sh
 ```
 
-- .venv 作成 & Python 依存インストール
-- スキルサーバ Rust バイナリビルド
-- Docker 起動（Redpanda + Gateway）
-- ネイティブでスキルサーバ起動（各カテゴリごと）
-- Gateway 待機
-- demo スクリプトで検証
+- 🐍 .venv 作成 & Python 依存インストール
+- 🦀 スキルサーバ Rust バイナリビルド
+- 🐳 Docker 起動（Redpanda + Gateway）
+- ⚙️ ネイティブでスキルサーバ起動（各カテゴリごと）
+- ⏳ Gateway 待機
+- ✅ demo スクリプトで検証
 
-## プロジェクト構成
+## 📁 プロジェクト構成
 
 ```
 SkillScale Lite/
@@ -115,7 +115,7 @@ SkillScale Lite/
 └── .env                        # APIキー・設定
 ```
 
-## 設定
+## ⚙️ 設定
 
 全スキル共通で skills/llm_utils.py を利用し .env を読み込み。
 
@@ -127,7 +127,7 @@ SkillScale Lite/
 
 LLM_PROVIDER=azure|openai|zhipu で選択。
 
-## License
+## 📄 License
 
 MIT
 
