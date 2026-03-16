@@ -1,12 +1,12 @@
-# SkillScale Lite — Infraestructura distribuida de habilidades como servicio para agentes
+# 🚀 SkillScale Lite — Infraestructura distribuida de habilidades como servicio para agentes
 
 > [English](README.md) | [简体中文](README_CN.md) | [繁體中文](README_TW.md) | [日本語](README_JP.md) | [Español](README_ES.md) | [Français](README_FR.md)
 
 ---
 
-SkillScale Lite es una infraestructura distribuida de alto rendimiento para ejecutar habilidades de agentes de IA a escala. Unifica los protocolos MCP (Model Context Protocol) y A2A (Google Agent-to-Agent) mediante un gateway Rust y Kafka (Redpanda), con servidores de habilidades nativos y aislamiento opcional por sandbox del sistema operativo.
+✨ SkillScale Lite es una infraestructura distribuida de alto rendimiento para ejecutar habilidades de agentes de IA a escala. Unifica los protocolos MCP (Model Context Protocol) y A2A (Google Agent-to-Agent) mediante un gateway Rust y Kafka (Redpanda), con servidores de habilidades nativos y aislamiento opcional por sandbox del sistema operativo.
 
-## Principios fundamentales
+## 🧠 Principios fundamentales
 
 SkillScale Lite resuelve el problema de fragmentación de protocolos en ecosistemas de agentes de IA. Los clientes MCP (Claude Desktop, Cursor, etc.) y los agentes A2A (Google, plataformas empresariales) usan protocolos distintos, mientras que los backends de ejecución requieren una interfaz unificada. SkillScale Lite lo unifica con una arquitectura de tres capas:
 
@@ -15,11 +15,11 @@ Capa de protocolo → Capa de gateway → Capa de ejecución
 (MCP/A2A)         (Rust, traducción) (Kafka + servidores de habilidades + LLM)
 ```
 
-- Nuevo protocolo = añadir handler HTTP en el gateway
-- Nueva habilidad = añadir carpeta en skills/ y reiniciar
-- Escalado = añadir procesos de servidor de habilidades (Kafka distribuye)
+- ➕ Nuevo protocolo = añadir handler HTTP en el gateway
+- 📂 Nueva habilidad = añadir carpeta en skills/ y reiniciar
+- 📈 Escalado = añadir procesos de servidor de habilidades (Kafka distribuye)
 
-## Flujo de solicitud
+## 🔄 Flujo de solicitud
 
 ```
 Cliente ──▶ Gateway Rust ──▶ Redpanda (Kafka) ──▶ Servidor de habilidades
@@ -31,7 +31,7 @@ Cliente ──▶ Gateway Rust ──▶ Redpanda (Kafka) ──▶ Servidor de 
                                             └── return result → Kafka → Gateway → Client
 ```
 
-## Granularidad de invocación
+## 🎯 Granularidad de invocación
 
 | Granularidad   | Nombre herramienta MCP         | Endpoint A2A                              | Enrutamiento                  |
 |---------------|-------------------------------|--------------------------------------------|-------------------------------|
@@ -40,7 +40,7 @@ Cliente ──▶ Gateway Rust ──▶ Redpanda (Kafka) ──▶ Servidor de 
 
 A2A solo soporta granularidad gruesa; MCP ambas.
 
-## Arquitectura
+## 🏗️ Arquitectura
 
 ```
 ┌───────────────┐
@@ -65,16 +65,16 @@ A2A solo soporta granularidad gruesa; MCP ambas.
 - Redpanda: Broker Kafka, puerto 9092
 - Servidor de habilidades: Rust + Python, consume topic Kafka, AGENTS.md + LLM para selección
 
-## Despliegue
+## 🚢 Despliegue
 
-- Los servidores de habilidades se ejecutan como procesos nativos, no en Docker
-- Docker solo incluye Redpanda, Console y Gateway
-- Los servidores de habilidades se lanzan nativamente con run_all.sh
-- Docker Compose no incluye servicios skill-server
+- 🖥️ Los servidores de habilidades se ejecutan como procesos nativos, no en Docker
+- 🐳 Docker solo incluye Redpanda, Console y Gateway
+- 🔧 Los servidores de habilidades se lanzan nativamente con run_all.sh
+- 📦 Docker Compose no incluye servicios skill-server
 
-## Inicio rápido
+## ⚡ Inicio rápido
 
-### Requisitos
+### 📋 Requisitos
 
 | Dependencia         | macOS                  | Ubuntu/Debian           |
 |---------------------|-----------------------|-------------------------|
@@ -84,20 +84,20 @@ A2A solo soporta granularidad gruesa; MCP ambas.
 
 > Docker solo es necesario para Redpanda y Gateway. Los servidores de habilidades se compilan y ejecutan nativamente.
 
-### Lanzamiento
+### 🚀 Lanzamiento
 
 ```bash
 ./run_all.sh
 ```
 
-- Crea .venv e instala dependencias Python
-- Compila el binario Rust del servidor de habilidades
-- Lanza Docker (Redpanda + Gateway)
-- Lanza procesos nativos de servidor de habilidades (uno por categoría)
-- Espera Gateway
-- Ejecuta scripts demo para validar
+- 🐍 Crea .venv e instala dependencias Python
+- 🦀 Compila el binario Rust del servidor de habilidades
+- 🐳 Lanza Docker (Redpanda + Gateway)
+- ⚙️ Lanza procesos nativos de servidor de habilidades (uno por categoría)
+- ⏳ Espera Gateway
+- ✅ Ejecuta scripts demo para validar
 
-## Estructura del proyecto
+## 📁 Estructura del proyecto
 
 ```
 SkillScale Lite/
@@ -116,7 +116,7 @@ SkillScale Lite/
 └── .env                        # Claves API y configuración
 ```
 
-## Configuración
+## ⚙️ Configuración
 
 Todas las habilidades usan skills/llm_utils.py, que lee .env.
 
@@ -128,7 +128,7 @@ Todas las habilidades usan skills/llm_utils.py, que lee .env.
 
 LLM_PROVIDER=azure|openai|zhipu para seleccionar.
 
-## License
+## 📄 License
 
 MIT
 
