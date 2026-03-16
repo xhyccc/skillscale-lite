@@ -116,6 +116,7 @@ for dir in skills/*/; do
     SKILLSCALE_GROUP_ID="$group_id" \
     SKILLSCALE_BROKER_URL="localhost:9092" \
     SKILLSCALE_ROOT="$(pwd)" \
+    SKILLSCALE_CATEGORY="$dirname" \
     SKILLSCALE_SANDBOX="${SKILLSCALE_SANDBOX:-none}" \
     RUST_LOG="${RUST_LOG:-info,skill_server=debug}" \
     "$SKILL_SERVER_BIN" > "$log_file" 2>&1 &
@@ -173,7 +174,7 @@ echo "    SkillScale Lite System Ready!         "
 echo "=========================================="
 echo "  Docker services:"
 echo "  • Redpanda Kafka:   localhost:9092"
-echo "  • Console (Web):    http://localhost:8080"
+echo "  • Console (Web):    http://localhost:8083"
 echo "  • A2A Gateway:      http://localhost:8085"
 echo "  • MCP Server:       http://localhost:8086/mcp"
 echo ""

@@ -150,6 +150,7 @@ async fn main() {
     let app = Router::new()
         .route("/health", get(|| async { "OK" }))
         .route("/v1/agents/:agent_id/converse", post(handle_converse))
+        .route("/v1/agents/:agent_id/skills/:skill_name/converse", post(handle_converse_skill))
         .with_state(state);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8085));
@@ -159,15 +160,39 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
+/// Coarse-grained A2A: POST /v1/agents/{agent_id}/converse
+/// The skill-server uses LLM to pick the best skill from AGENTS.md.
 async fn handle_converse(
     Path(agent_id): Path<String>,
     State(state): State<Arc<AppState>>,
-    Json(mut params): Json<SendTaskParams>,
+    Json(params): Json<SendTaskParams>,
 ) -> Json<Value> {
-    info!("Received converse request for agent: {} (ID: {})", agent_id, params.id);
+    info!("[A2A coarse] agent={}, id={}", agent_id, params.id);
+    do_converse(state, agent_id.clone(), agent_id, params).await
+}
+
+/// Fine-grained A2A: POST /v1/agents/{agent_id}/skills/{skill_name}/converse
+/// The skill-server routes directly to the named skill.
+async fn handle_converse_skill(
+    Path((agent_id, skill_name)): Path<(String, String)>,
+    State(state): State<Arc<AppState>>,
+    Json(params): Json<SendTaskParams>,
+) -> Json<Value> {
+    info!("[A2A fine] agent={}, skill={}, id={}", agent_id, skill_name, params.id);
+    do_converse(state, agent_id, skill_name, params).await
+}
+
+/// Shared A2A converse logic.
+/// `category` determines the Kafka topic; `skill` is injected into metadata.
+async fn do_converse(
+    state: Arc<AppState>,
+    category: String,
+    skill: String,
+    mut params: SendTaskParams,
+) -> Json<Value> {
     
-    let topic = format!("TOPIC_{}", agent_id.replace("-", "_").to_uppercase());
-    info!("Routing to topic: {}", topic);
+    let topic = format!("TOPIC_{}", category.replace("-", "_").to_uppercase());
+    info!("Routing to topic: {}, skill: {}", topic, skill);
 
     // Inject reply_to and request_id into metadata
     if params.metadata.is_none() {
@@ -176,7 +201,7 @@ async fn handle_converse(
     if let Some(meta) = params.metadata.as_mut() {
         meta.insert("reply_to".to_string(), state.reply_topic.clone());
         meta.insert("request_id".to_string(), params.id.clone());
-        meta.insert("skill".to_string(), agent_id.clone()); // also inject skill name
+        meta.insert("skill".to_string(), skill);
     }
 
     let payload_json = serde_json::to_string(&params).unwrap_or_default();
@@ -189,7 +214,7 @@ async fn handle_converse(
     }
 
     let record = FutureRecord::to(&topic)
-        .key(&agent_id)
+        .key(&category)
         .payload(&payload_json);
 
     match state.producer.send(record, Timeout::After(Duration::from_secs(5))).await {
@@ -197,28 +222,41 @@ async fn handle_converse(
             // Wait for response with timeout from config
             match tokio::time::timeout(state.gateway_timeout, rx).await {
                 Ok(Ok(response_val)) => {
-                    // Start forming the A2A response
-                    // Extract result string from the response
-                    let result_str = response_val.get("result").and_then(|v| v.as_str()).unwrap_or("");
-                    
-                    Json(json!({
-                        "jsonrpc": "2.0",
-                        "id": params.id,
-                        "result": {
+                    // Check if the skill-server returned an error
+                    let is_error = response_val.get("status")
+                        .and_then(|v| v.as_str())
+                        .map(|s| s == "error")
+                        .unwrap_or(false);
+
+                    if is_error {
+                        let err_msg = response_val.get("error")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or("Unknown skill error");
+                        Json(json!({
+                            "jsonrpc": "2.0",
                             "id": params.id,
-                            "status": {
-                                "state": "completed",
-                                "timestamp": chrono::Utc::now().to_rfc3339()
-                            },
-                            // Add history message with the result
-                            "history": [
-                                {
-                                    "role": "assistant",
-                                    "parts": [{ "type": "text", "text": result_str }]
-                                }
-                            ]
-                        }
-                    }))
+                            "error": { "code": -32603, "message": err_msg }
+                        }))
+                    } else {
+                        let result_str = response_val.get("result").and_then(|v| v.as_str()).unwrap_or("");
+                        Json(json!({
+                            "jsonrpc": "2.0",
+                            "id": params.id,
+                            "result": {
+                                "id": params.id,
+                                "status": {
+                                    "state": "completed",
+                                    "timestamp": chrono::Utc::now().to_rfc3339()
+                                },
+                                "history": [
+                                    {
+                                        "role": "assistant",
+                                        "parts": [{ "type": "text", "text": result_str }]
+                                    }
+                                ]
+                            }
+                        }))
+                    }
                 },
                 Ok(Err(_)) => {
                     Json(json!({

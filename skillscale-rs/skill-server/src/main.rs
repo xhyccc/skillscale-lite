@@ -19,6 +19,7 @@ use common::{SendTaskParams, Part};
 struct SkillEntry {
     name: String,
     script_path: PathBuf,
+    description: String,
 }
 
 #[tokio::main]
@@ -32,6 +33,22 @@ async fn main() -> Result<()> {
 
     // Scan and index all available skills
     let skills = discover_skills(&skills_root)?;
+
+    // Filter skills to current category if SKILLSCALE_CATEGORY is set
+    let category = std::env::var("SKILLSCALE_CATEGORY").ok();
+    let skills = if let Some(ref cat) = category {
+        let filtered: Vec<SkillEntry> = skills.into_iter().filter(|s| {
+            // Keep skill if its path contains /<category>/ segment
+            let path_str = s.script_path.to_string_lossy();
+            let pattern = format!("/{}/", cat);
+            path_str.contains(&pattern)
+        }).collect();
+        info!("Filtered to category '{}': {} skills", cat, filtered.len());
+        filtered
+    } else {
+        skills
+    };
+
     info!("Discovered {} skills:", skills.len());
     for s in &skills {
         info!("  - {} -> {:?}", s.name, s.script_path);
@@ -68,6 +85,9 @@ async fn main() -> Result<()> {
         .context("Can't subscribe to topic")?;
 
     info!("Subscribed to '{}'. Waiting for messages...", topic);
+
+    // Load AGENTS.md descriptions and enrich skill entries
+    let skills = enrich_skills_from_agents_md(&skills_root, skills);
 
     // Build a name->entry lookup map
     let skill_map: HashMap<String, SkillEntry> = skills
@@ -131,24 +151,43 @@ async fn main() -> Result<()> {
 
                     info!("Executing skill: '{}' with input len: {}", skill_name, skill_input.len());
 
-                    // Resolve skill script and execute directly
-                    let execution_result = if let Some(entry) = skill_map.get(&skill_name) {
-                        match execute_skill_direct(&entry.script_path, &skill_input, &sandbox_mode).await {
-                            Ok(output) => {
-                                info!("Skill '{}' executed successfully.", skill_name);
-                                Ok(output)
+                    // Resolve skill: direct match first, then LLM-based coarse routing
+                    let resolved_skill = if skill_map.contains_key(&skill_name) {
+                        Some(skill_name.clone())
+                    } else if skill_name.is_empty() || !skill_map.values().any(|e| e.name == skill_name) {
+                        // Coarse-grained: no exact skill match → ask LLM to pick best skill
+                        info!("Coarse-grained routing: asking LLM to match input to best skill...");
+                        match match_skill_by_llm(&skill_map, &skill_input).await {
+                            Some(matched) => {
+                                info!("LLM matched to skill: '{}'", matched);
+                                Some(matched)
                             }
-                            Err(e) => {
-                                error!("Skill '{}' execution failed: {:?}", skill_name, e);
-                                Err(e.to_string())
+                            None => {
+                                warn!("LLM could not match any skill for input.");
+                                None
                             }
                         }
-                    } else if skill_name.is_empty() {
-                        // No skill specified — try first available skill as fallback
-                        warn!("No skill specified, cannot dispatch.");
-                        Err("No skill name provided in request".to_string())
                     } else {
-                        error!("Unknown skill '{}'. Available: {:?}", skill_name,
+                        None
+                    };
+
+                    let execution_result = if let Some(ref resolved) = resolved_skill {
+                        if let Some(entry) = skill_map.get(resolved) {
+                            match execute_skill_direct(&entry.script_path, &skill_input, &sandbox_mode).await {
+                                Ok(output) => {
+                                    info!("Skill '{}' executed successfully.", resolved);
+                                    Ok(output)
+                                }
+                                Err(e) => {
+                                    error!("Skill '{}' execution failed: {:?}", resolved, e);
+                                    Err(e.to_string())
+                                }
+                            }
+                        } else {
+                            Err(format!("Resolved skill '{}' not found in map", resolved))
+                        }
+                    } else {
+                        error!("Cannot route skill '{}'. Available: {:?}", skill_name,
                             skill_map.keys().collect::<Vec<_>>());
                         Err(format!("Unknown skill '{}'. Available skills: {:?}",
                             skill_name, skill_map.keys().collect::<Vec<_>>()))
@@ -225,6 +264,173 @@ fn find_skills_root() -> Result<PathBuf> {
     );
 }
 
+/// Parse AGENTS.md files to extract skill descriptions and enrich SkillEntry objects.
+fn enrich_skills_from_agents_md(skills_root: &Path, mut skills: Vec<SkillEntry>) -> Vec<SkillEntry> {
+    // Find all AGENTS.md files
+    for entry in WalkDir::new(skills_root)
+        .max_depth(2)
+        .follow_links(true)
+        .into_iter()
+        .filter_map(|e| e.ok())
+    {
+        if entry.file_name() == "AGENTS.md" {
+            if let Ok(content) = std::fs::read_to_string(entry.path()) {
+                // Parse <skill> blocks to extract name and description
+                let mut current_name = String::new();
+                let mut current_desc = String::new();
+                let mut in_skill = false;
+                let mut in_desc = false;
+
+                for line in content.lines() {
+                    let trimmed = line.trim();
+                    if trimmed.starts_with("<skill>") {
+                        in_skill = true;
+                        current_name.clear();
+                        current_desc.clear();
+                    } else if trimmed.starts_with("</skill>") {
+                        if in_skill && !current_name.is_empty() {
+                            // Find and enrich the matching skill
+                            for skill in skills.iter_mut() {
+                                if skill.name == current_name && skill.description.is_empty() {
+                                    skill.description = current_desc.trim().to_string();
+                                    debug!("Enriched skill '{}' with description from AGENTS.md", skill.name);
+                                }
+                            }
+                        }
+                        in_skill = false;
+                        in_desc = false;
+                    } else if in_skill {
+                        if trimmed.starts_with("<name>") && trimmed.ends_with("</name>") {
+                            current_name = trimmed
+                                .trim_start_matches("<name>")
+                                .trim_end_matches("</name>")
+                                .trim()
+                                .to_string();
+                        } else if trimmed.starts_with("<description>") {
+                            in_desc = true;
+                            let after = trimmed.trim_start_matches("<description>");
+                            if after.ends_with("</description>") {
+                                current_desc = after.trim_end_matches("</description>").trim().to_string();
+                                in_desc = false;
+                            } else {
+                                current_desc = after.to_string();
+                            }
+                        } else if trimmed.starts_with("</description>") {
+                            in_desc = false;
+                        } else if in_desc {
+                            if !current_desc.is_empty() {
+                                current_desc.push(' ');
+                            }
+                            current_desc.push_str(trimmed);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    skills
+}
+
+/// Use LLM to pick the best skill for the given input text.
+/// Calls the OpenAI-compatible chat completions API configured via env vars.
+async fn match_skill_by_llm(
+    skill_map: &HashMap<String, SkillEntry>,
+    input: &str,
+) -> Option<String> {
+    if skill_map.is_empty() {
+        return None;
+    }
+
+    // Build skill catalog for the prompt
+    let mut catalog = String::new();
+    let skill_names: Vec<&String> = skill_map.keys().collect();
+    for (name, entry) in skill_map.iter() {
+        catalog.push_str(&format!("- {}", name));
+        if !entry.description.is_empty() {
+            catalog.push_str(&format!(": {}", entry.description));
+        }
+        catalog.push('\n');
+    }
+
+    let api_base = std::env::var("OPENAI_API_BASE")
+        .unwrap_or_else(|_| "https://api.openai.com/v1".to_string());
+    let api_key = std::env::var("OPENAI_API_KEY").unwrap_or_default();
+    let model = std::env::var("OPENAI_MODEL")
+        .unwrap_or_else(|_| "gpt-4o".to_string());
+
+    if api_key.is_empty() {
+        warn!("OPENAI_API_KEY not set, falling back to first skill");
+        return skill_map.keys().next().cloned();
+    }
+
+    // Truncate input to avoid excessive token usage (first 500 chars)
+    let truncated_input: String = input.chars().take(500).collect();
+
+    let system_prompt = format!(
+        "You are a skill router. Given a user request, pick the single best matching skill from the list below.\n\
+         Reply with ONLY the skill name, nothing else. No explanation, no quotes, no punctuation.\n\n\
+         Available skills:\n{}",
+        catalog
+    );
+
+    let url = format!("{}/chat/completions", api_base.trim_end_matches('/'));
+
+    let body = serde_json::json!({
+        "model": model,
+        "messages": [
+            { "role": "system", "content": system_prompt },
+            { "role": "user", "content": truncated_input }
+        ],
+        "max_tokens": 32,
+        "temperature": 0.0
+    });
+
+    let client = reqwest::Client::new();
+    match client
+        .post(&url)
+        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Content-Type", "application/json")
+        .json(&body)
+        .timeout(Duration::from_secs(15))
+        .send()
+        .await
+    {
+        Ok(resp) => {
+            if let Ok(json) = resp.json::<serde_json::Value>().await {
+                if let Some(choice) = json["choices"].get(0) {
+                    let content = choice["message"]["content"]
+                        .as_str()
+                        .unwrap_or("")
+                        .trim()
+                        .to_string();
+                    info!("LLM routing response: '{}'", content);
+
+                    // Validate LLM returned a known skill name
+                    if skill_map.contains_key(&content) {
+                        return Some(content);
+                    }
+                    // Try case-insensitive / partial match
+                    let content_lower = content.to_lowercase();
+                    for name in &skill_names {
+                        if name.to_lowercase() == content_lower {
+                            return Some((*name).clone());
+                        }
+                    }
+                    warn!("LLM returned unknown skill '{}', falling back", content);
+                }
+            }
+        }
+        Err(e) => {
+            error!("LLM routing request failed: {}", e);
+        }
+    }
+
+    // Fallback to first available skill
+    let first = skill_map.keys().next().cloned();
+    info!("LLM routing failed, falling back to first skill: {:?}", first);
+    first
+}
+
 /// Walk the skills directory tree to find all `scripts/run.py` files.
 /// Directory structure: skills/<category>/.claude/skills/<skill-name>/scripts/run.py
 fn discover_skills(skills_root: &Path) -> Result<Vec<SkillEntry>> {
@@ -253,6 +459,7 @@ fn discover_skills(skills_root: &Path) -> Result<Vec<SkillEntry>> {
                             entries.push(SkillEntry {
                                 name: skill_name,
                                 script_path: path.to_path_buf(),
+                                description: String::new(),
                             });
                         }
                     }

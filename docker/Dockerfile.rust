@@ -3,32 +3,21 @@ FROM docker.m.daocloud.io/rust:1-bookworm AS builder
 RUN apt-get update && apt-get install -y cmake clang libssl-dev pkg-config && rm -rf /var/lib/apt/lists/*
 WORKDIR /usr/src/skillscale-rs
 COPY skillscale-rs/ .
-# Build release binaries for gateway, skill-server, and mcp-server
-RUN cargo build --release
+# Build only the gateway binary (skill-server runs natively, not in Docker)
+RUN cargo build --release -p gateway
 
-# ── Stage 2: Runtime Image (no OpenCode CLI needed — direct spawn) ──
-FROM docker.m.daocloud.io/python:3.11-bookworm
+# ── Stage 2: Minimal runtime image (gateway is a pure Rust binary) ──
+FROM docker.m.daocloud.io/debian:bookworm-slim
 
-# Install runtime dependencies (OpenSSL for rdkafka)
+# Install runtime dependencies (OpenSSL for rdkafka TLS)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libssl3 ca-certificates curl bash procps && \
+    libssl3 ca-certificates curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy Rust binaries from builder
+# Copy gateway binary from builder (skill-server runs natively)
 COPY --from=builder /usr/src/skillscale-rs/target/release/gateway /usr/local/bin/gateway
-COPY --from=builder /usr/src/skillscale-rs/target/release/skill-server /usr/local/bin/skill-server
-COPY --from=builder /usr/src/skillscale-rs/target/release/mcp-server /usr/local/bin/mcp-server
 
 WORKDIR /app
 
-# Copy Python requirements and install
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy skill definitions (scripts/ and .claude/ no longer needed)
-COPY skills/ /app/skills/
-
-ENV SKILLSCALE_ROOT=/app
-
-# Default entrypoint (overridden by docker-compose)
+# Default entrypoint
 CMD ["gateway"]

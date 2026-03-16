@@ -2,12 +2,13 @@
 """
 Google Agent-to-Agent (A2A) Client Demo
 
-Coarse-grained: the caller only specifies *which agent* to talk to via the URL path.
-The Gateway derives the Kafka topic automatically (code-analysis → TOPIC_CODE_ANALYSIS)
-and the Skill Server uses AGENTS.md to decide which skill to run.
+Demonstrates both coarse-grained and fine-grained A2A invocations:
 
+  Coarse-grained (AGENTS.md + LLM picks skill):
     POST /v1/agents/{agent_id}/converse
-    Body: A2A TaskSendParams (message only, no routing metadata needed)
+
+  Fine-grained (directly invoke a specific skill):
+    POST /v1/agents/{agent_id}/skills/{skill_name}/converse
 """
 
 import os
@@ -27,22 +28,8 @@ from a2a_protocol.pydantic_v2 import (
 GATEWAY_URL = "http://127.0.0.1:8085"
 
 
-def main():
-    agent_id = "code-analysis"
-    url = f"{GATEWAY_URL}/v1/agents/{agent_id}/converse"
-
-    code_text = (
-        "def process_data(data):\n"
-        "    count = 0\n"
-        "    for item in data:\n"
-        "        if item > 10:\n"
-        "            count += 1\n"
-        "            if count > 5:\n"
-        "                return True\n"
-        "    return False\n"
-    )
-
-    # A2A: only agent_id in the URL, no topic/skill metadata needed
+def send_a2a(url, code_text, label):
+    """Send an A2A request and print the response."""
     params = TaskSendParams(
         id=f"task_{uuid.uuid4().hex[:8]}",
         sessionId=f"session_{uuid.uuid4().hex[:8]}",
@@ -54,8 +41,8 @@ def main():
 
     payload = params.model_dump(mode="json", exclude_none=True)
 
-    print("Starting A2A Client Demo...")
-    print(f"  Agent:   {agent_id}")
+    print(f"Starting A2A Client Demo...")
+    print(f"  Mode:    {label}")
     print(f"  Target:  {url}")
     print(f"  Payload: {json.dumps(payload, indent=2)}")
     print("-" * 50)
@@ -68,14 +55,48 @@ def main():
         method="POST",
     )
 
+    timeout = int(float(os.environ.get('SKILLSCALE_GATEWAY_TIMEOUT', '600')))
+    with urllib.request.urlopen(req, timeout=timeout) as response:
+        resp_data = json.loads(response.read().decode("utf-8"))
+        print(f"\n[A2A] Response:")
+        print(json.dumps(resp_data, indent=2))
+    return resp_data
+
+
+def main():
+    code_text = (
+        "def process_data(data):\n"
+        "    count = 0\n"
+        "    for item in data:\n"
+        "        if item > 10:\n"
+        "            count += 1\n"
+        "            if count > 5:\n"
+        "                return True\n"
+        "    return False\n"
+    )
+
+    # ── 1. Coarse-grained: agent only (LLM picks skill from AGENTS.md) ──
+    print("=" * 60)
+    print("  [1] Coarse-grained A2A (agent__code-analysis)")
+    print("=" * 60)
+    coarse_url = f"{GATEWAY_URL}/v1/agents/code-analysis/converse"
     try:
-        timeout = int(float(os.environ.get('SKILLSCALE_GATEWAY_TIMEOUT', '600')))
-        with urllib.request.urlopen(req, timeout=timeout) as response:
-            resp_data = json.loads(response.read().decode("utf-8"))
-            print("\n[A2A] Response:")
-            print(json.dumps(resp_data, indent=2))
+        send_a2a(coarse_url, code_text, "coarse-grained — LLM picks the skill")
     except Exception as e:
-        print(f"A2A request failed: {e}")
+        print(f"Coarse-grained A2A failed: {e}")
+        sys.exit(1)
+
+    print()
+
+    # ── 2. Fine-grained: agent + skill (directly invoke dead-code-detector) ──
+    print("=" * 60)
+    print("  [2] Fine-grained A2A (code-analysis/dead-code-detector)")
+    print("=" * 60)
+    fine_url = f"{GATEWAY_URL}/v1/agents/code-analysis/skills/dead-code-detector/converse"
+    try:
+        send_a2a(fine_url, code_text, "fine-grained — directly invoke dead-code-detector")
+    except Exception as e:
+        print(f"Fine-grained A2A failed: {e}")
         sys.exit(1)
 
 

@@ -192,7 +192,7 @@ log "Generated opencode.json (provider=${PROVIDER_ID}, model=${OPENAI_MODEL})"
 # ════════════════════════════════════════════════════════════
 step "Scanning skills/ and generating docker-compose.yml"
 
-# Discover skill categories (for native skill-server launch)
+# Discover skill server directories (each subfolder under skills/ with an AGENTS.md)
 SKILL_DIRS=()
 SKILL_NAMES=()
 SKILL_TOPICS=()
@@ -207,7 +207,7 @@ for dir in skills/*/; do
     SKILL_DIRS+=("$dir")
     SKILL_NAMES+=("$dirname")
 
-    # Derive topic name: data-processing → TOPIC_DATA_PROCESSING
+    # Derive docker topic name: data-processing → TOPIC_DATA_PROCESSING
     topic="TOPIC_$(echo "$dirname" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
     SKILL_TOPICS+=("$topic")
 
@@ -215,37 +215,19 @@ for dir in skills/*/; do
     desc=$(head -1 "$dir/AGENTS.md" | sed 's/^#* *//')
     SKILL_DESCS+=("$desc")
 
-    log "Found skill category: ${CYAN}$dirname${NC} → topic=$topic"
+    log "Found skill server: ${CYAN}$dirname${NC} → topic=$topic"
 done
 
 if [[ ${#SKILL_DIRS[@]} -eq 0 ]]; then
-    err "No skill categories found under skills/!"
-    err "Each category needs a subfolder with an AGENTS.md file."
+    err "No skill server directories found under skills/!"
+    err "Each skill server needs a subfolder with an AGENTS.md file."
     exit 1
 fi
 
-log "Discovered ${#SKILL_DIRS[@]} skill category(ies). Skill servers will run natively (not in Docker)."
+log "Discovered ${#SKILL_DIRS[@]} skill server(s)."
 
 # ── Generate docker-compose.yml ──
 COMPOSE_FILE="docker-compose.yml"
-
-# Build the env block shared by all skill servers
-ENV_BLOCK='      SKILLSCALE_BROKER_URL: "redpanda:29092"
-      SKILLSCALE_ROOT: "/app"
-      OPENAI_API_KEY: "'"${OPENAI_API_KEY}"'"
-      OPENAI_API_BASE: "'"${OPENAI_API_BASE}"'"
-      LLM_PROVIDER: "'"${LLM_PROVIDER}"'"'
-
-# Add optional provider keys if set
-[[ -n "${AZURE_API_KEY:-}" ]]     && ENV_BLOCK+=$'\n''      AZURE_API_KEY: "'"${AZURE_API_KEY}"'"'
-[[ -n "${AZURE_API_BASE:-}" ]]    && ENV_BLOCK+=$'\n''      AZURE_API_BASE: "'"${AZURE_API_BASE}"'"'
-[[ -n "${AZURE_MODEL:-}" ]]       && ENV_BLOCK+=$'\n''      AZURE_MODEL: "'"${AZURE_MODEL}"'"'
-[[ -n "${AZURE_API_VERSION:-}" ]] && ENV_BLOCK+=$'\n''      AZURE_API_VERSION: "'"${AZURE_API_VERSION}"'"'
-[[ -n "${ZHIPU_API_KEY:-}" ]]     && ENV_BLOCK+=$'\n''      ZHIPU_API_KEY: "'"${ZHIPU_API_KEY}"'"'
-[[ -n "${ZHIPU_MODEL:-}" ]]       && ENV_BLOCK+=$'\n''      ZHIPU_MODEL: "'"${ZHIPU_MODEL}"'"'
-# Default RUST_LOG if not set
-RUST_LOG="${RUST_LOG:-info,skill_server=debug}"
-ENV_BLOCK+=$'\n''      RUST_LOG: "'"${RUST_LOG}"'"'
 
 # Start composing
 cat > "$COMPOSE_FILE" <<'HEADER'
@@ -305,7 +287,7 @@ services:
             enabled: true
             urls: ["http://redpanda:9644"]
     ports:
-      - "8080:8080"
+      - "8083:8080"
     depends_on:
       redpanda:
         condition: service_healthy
@@ -330,12 +312,14 @@ services:
 
 HEADER
 
+# NOTE: Skill servers run natively (not in Docker), launched by run_all.sh
+
 cat >> "$COMPOSE_FILE" <<VOLUMES
 volumes:
   redpanda-data:
 VOLUMES
 
-log "Generated docker-compose.yml (gateway + redpanda only, skill-servers run natively)."
+log "Generated docker-compose.yml with gateway + redpanda (skill-servers run natively)."
 
 # ════════════════════════════════════════════════════════════
 # 5. Ensure Docker is running
@@ -387,11 +371,10 @@ log "Old containers stopped."
 # ════════════════════════════════════════════════════════════
 step "Building Docker images"
 
-log "Building Rust Gateway Docker image..."
+log "Building Rust Gateway..."
 docker compose build gateway 2>&1
 
 log "Gateway image built successfully."
-log "(Skill servers will be compiled and launched natively by run_all.sh)"
 
 # ════════════════════════════════════════════════════════════
 # 8. Launch (unless --build-only)
@@ -423,18 +406,16 @@ for ((i=1; i<=MAX_RETRIES; i++)); do
     fi
 done
 
-log "Creating Kafka topics..."
-for topic in "${SKILL_TOPICS[@]}"; do
-    if docker compose exec redpanda rpk topic create "$topic" -r 1 -p 1 2>/dev/null; then
-        log "Topic '$topic' created."
-    else
-        log "Topic '$topic' likely already exists."
-    fi
-done
+log "Creating Kafka topics (skill.request)..."
+if docker compose exec redpanda rpk topic create skill.request -r 1 -p 1 2>/dev/null; then
+    log "Topic 'skill.request' created."
+else
+    log "Topic 'skill.request' likely already exists."
+fi
 
-step "Launching Gateway"
-# Start only the gateway — skill-servers run natively via run_all.sh
-docker compose up -d gateway 2>&1
+step "Launching Skill Servers & Gateway"
+# Now start the consumers/producers which depend on the topic
+docker compose up -d 2>&1
 
 
 # ════════════════════════════════════════════════════════════
@@ -444,24 +425,22 @@ step "Service Status"
 docker compose ps
 
 echo ""
-log "${GREEN}${BOLD}SkillScale Lite Infrastructure (Rust Gateway + Redpanda) is running!${NC}"
+log "${GREEN}${BOLD}SkillScale (Rust + Redpanda) is running!${NC}"
 echo ""
 echo -e "  ${CYAN}Gateway A2A/HTTP:${NC}  http://localhost:8085"
 echo -e "  ${CYAN}Gateway MCP/SSE:${NC}  http://localhost:8086/mcp"
 echo -e "  ${CYAN}Redpanda Kafka:${NC}    localhost:9092"
-echo -e "  ${CYAN}Redpanda Console:${NC}  http://localhost:8080"
+echo -e "  ${CYAN}Redpanda Console:${NC}  http://localhost:8083"
 echo ""
-echo -e "  ${CYAN}Skill categories (native):${NC}"
+echo -e "  ${CYAN}Skill servers:${NC}"
 for i in "${!SKILL_NAMES[@]}"; do
     echo -e "    • ${BOLD}${SKILL_NAMES[$i]}${NC}  →  ${SKILL_TOPICS[$i]}"
 done
 echo ""
-echo -e "  ${CYAN}Note:${NC} Skill servers run natively (not in Docker)."
-echo -e "  Use ${BOLD}./run_all.sh${NC} to launch the complete system."
-echo ""
 echo -e "  ${CYAN}Commands:${NC}"
-echo "    ./run_all.sh                    # launch complete system (Docker + native skill-servers)"
-echo "    docker compose logs -f          # follow Docker logs"
-echo "    docker compose down             # stop Docker services"
-echo "    bash build.sh --down            # stop Docker services"
+echo "    ./run_all.sh                    # launch complete system + gateway"
+echo "    docker compose logs -f          # follow all logs"
+echo "    docker compose logs <service>   # single service logs"
+echo "    docker compose down             # stop everything"
+echo "    bash build.sh --down            # stop everything"
 echo ""
