@@ -27,8 +27,19 @@
  客戶端                Rust 閘道                Redpanda            技能伺服器
 ```
 
-...existing code...
-
 ## 授權
 
 MIT
+
+## 部署更新
+
+**Skill Server 現在以原生進程運行，不再使用 Docker 容器。**
+
+- Docker 只包含 Redpanda、Console 和 Gateway。
+- Skill Server 由 `run_all.sh` 腳本原生啟動。
+- Docker Compose 不再包含 skill-server 服務。
+
+**快速啟動：**
+
+1. 執行 `./run_all.sh` 啟動全部服務（Redpanda、Gateway、原生 Skill Server）。
+2. 技能會從 `skills/` 自動發現並原生執行。

@@ -44,7 +44,18 @@
    │    またはA2A response │                      │                     │
 ```
 
-...existing code...
+## デプロイ更新
+
+**Skill Server は Docker コンテナではなく、ネイティブプロセスとして実行されます。**
+
+- Docker には Redpanda、Console、Gateway のみが含まれます。
+- Skill Server は `run_all.sh` でネイティブ起動されます。
+- Docker Compose から skill-server サービスは削除されました。
+
+**クイックスタート：**
+
+1. `./run_all.sh` を実行して全サービス（Redpanda、Gateway、ネイティブ Skill Server）を起動。
+2. スキルは `skills/` から自動検出され、ネイティブ実行されます。
 
 ## ライセンス
 

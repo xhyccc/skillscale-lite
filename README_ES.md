@@ -44,7 +44,18 @@ Los ecosistemas modernos de agentes de IA enfrentan un problema de **fragmentaci
    │    o respuesta A2A       │                        │                     │
 ```
 
-...existing code...
+## Actualización de despliegue
+
+**Los servidores de habilidades ahora se ejecutan como procesos nativos, no como contenedores Docker.**
+
+- Solo Redpanda, Console y Gateway se ejecutan en Docker.
+- Los servidores de habilidades se lanzan nativamente con `run_all.sh`.
+- Docker Compose ya no incluye servicios de skill-server.
+
+**Inicio rápido:**
+
+1. Ejecuta `./run_all.sh` para lanzar todo (Redpanda, Gateway, servidores de habilidades nativos).
+2. Las habilidades se descubren desde `skills/` y se ejecutan nativamente.
 
 ## Licencia
 
