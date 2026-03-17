@@ -15,6 +15,7 @@
 \usepackage{balance}
 \usepackage{amsmath}
 \usepackage{url}
+\usepackage{amssymb}
 
 %% ============================================================
 %% Listing style (code blocks)
@@ -149,7 +150,41 @@ Several open-source projects have attempted to bridge MCP and A2A:
 
 \textbf{peerclaw-server}~\cite{peerclaw2024} is a Go-based agent registry that supports A2A, MCP, and the Agent Communication Protocol (ACP), adding a reputation engine and access control. However, skill execution is not addressed and the routing is static.
 
-None of these projects provides a distributed execution backend, LLM-powered intent routing, or pluggable skill management---capabilities that are central to SkillScale Lite.
+\textbf{openclaw-a2a-bridge}~\cite{openclaw2024} is a JavaScript plugin that exposes an agent card, a JSON-RPC endpoint, and remote agent tool definitions for A2A protocol bridging, but does not include execution infrastructure or scaling mechanisms.
+
+\textbf{protocol-bridge}~\cite{protocolbridge2024} is a thin bridge between MCP and A2A; it offers no skill execution, queueing, or intent routing.
+
+None of these projects provides a distributed execution backend, LLM-powered intent routing, or pluggable skill management---capabilities that are central to SkillScale Lite. Table~\ref{tab:comparison} provides a structured feature comparison.
+
+\begin{table*}[t]
+\centering
+\caption{Feature comparison of SkillScale Lite against comparable open-source MCP/A2A projects.
+\checkmark{} = fully supported; $\sim$ = partially supported; $\times$ = not supported.}
+\label{tab:comparison}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Feature}
+  & \textbf{SkillScale Lite}
+  & \textbf{A2A-MCP-Server}~\cite{a2amcpserver2024}
+  & \textbf{a2a-gateway}~\cite{a2agateway2024}
+  & \textbf{peerclaw}~\cite{peerclaw2024}
+  & \textbf{openclaw-bridge}~\cite{openclaw2024} \\
+\midrule
+MCP support                    & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+A2A support                    & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+Distributed message queue      & \checkmark & $\times$   & $\times$   & $\times$   & $\times$   \\
+Horizontal worker scaling      & \checkmark & $\times$   & $\times$   & $\times$   & $\times$   \\
+LLM-powered intent routing     & \checkmark & $\times$   & $\times$   & $\times$   & $\times$   \\
+Pluggable skill execution      & \checkmark & $\times$   & $\times$   & $\times$   & $\times$   \\
+High-performance gateway (Rust)& \checkmark & $\times$   & $\times$   & $\times$   & $\times$   \\
+Dual invocation granularity    & \checkmark & $\times$   & $\times$   & $\times$   & $\times$   \\
+Native OS process isolation    & \checkmark & $\times$   & $\times$   & $\times$   & $\times$   \\
+Multi-LLM provider support     & \checkmark & $\times$   & $\times$   & $\times$   & $\times$   \\
+Agent registry / discovery     & $\sim$ & $\times$ & \checkmark & \checkmark & $\sim$ \\
+Access control / reputation    & $\times$   & $\times$   & $\times$   & \checkmark & $\times$   \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
 \subsection{Message-Oriented Middleware}
 
@@ -368,11 +403,11 @@ Table~\ref{tab:config} lists the environment variables that control runtime beha
 
 All experiments were conducted on an Apple M2 Pro machine with 16\,GB RAM running macOS 14.5. Docker Desktop 4.30 was used for container-based baselines. Redpanda version 23.3 served as the Kafka broker. We compiled the Rust binaries with \texttt{cargo build --release}. Python 3.11 executed all skill scripts. LLM calls targeted a local mock server to eliminate network variability (a Zhipu GLM-4.7-FlashX instance was used for intent routing experiments). We report the median and 95th-percentile (P95) across 100 repetitions for latency measurements and means across 5 runs for throughput.
 
-We compare SkillScale Lite against two baselines:
+We compare SkillScale Lite against two baselines chosen to represent the two dominant architectural patterns found in the comparable projects surveyed in Section~\ref{sec:related} (Table~\ref{tab:comparison}):
 
 \begin{description}
-  \item[Docker baseline.] Skills run inside Docker containers; each invocation starts a fresh container, executes the skill, and destroys the container. This approximates the pre-existing architecture documented in \texttt{arch.md}.
-  \item[Direct-HTTP baseline.] Skills run as HTTP microservices; the gateway makes synchronous HTTP calls with no message broker. This approximates existing MCP--A2A bridge implementations~\cite{a2amcpserver2024,a2agateway2024}.
+  \item[Docker baseline.] Skills run inside Docker containers; each invocation starts a fresh container, executes the skill, and destroys the container. This approximates the pre-existing architecture documented in \texttt{arch.md} and represents the worst-case overhead of container-isolated execution.
+  \item[Direct-HTTP baseline.] Skills run as always-on HTTP microservices; the gateway makes synchronous HTTP calls with no message broker. This approximates the architectural pattern used by all five comparable projects listed in Table~\ref{tab:comparison} (A2A-MCP-Server~\cite{a2amcpserver2024}, a2a-gateway~\cite{a2agateway2024}, peerclaw-server~\cite{peerclaw2024}, openclaw-a2a-bridge~\cite{openclaw2024}, protocol-bridge~\cite{protocolbridge2024}): a thin protocol-translation layer that delegates to a synchronous HTTP backend with no queueing or worker pool.
 \end{description}
 
 \subsection{Startup Latency}
