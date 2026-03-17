@@ -1,0 +1,13 @@
+# LaTeX build artifacts — do not commit
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+# Keep the generated PDF so readers can view it without a TeX installation
+# (comment the next line out if you prefer not to track the PDF)
+# *.pdf
