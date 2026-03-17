@@ -44,3 +44,4 @@ package-lock.json
 
 # Rust build artifacts
 skillscale-rs/target/
+perf-eval/target/
