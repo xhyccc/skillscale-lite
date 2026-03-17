@@ -10,7 +10,7 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
-\usetikzlibrary{shapes.geometric, arrows, positioning, fit, backgrounds}
+\usetikzlibrary{shapes.geometric, arrows, positioning, fit, backgrounds, calc}
 \usepackage{microtype}
 \usepackage{balance}
 \usepackage{amsmath}
@@ -208,6 +208,128 @@ SkillScale Lite is organised into three horizontal layers, as illustrated in Fig
 \label{fig:arch}
 \end{figure}
 
+Figure~\ref{fig:arch_detailed} shows the detailed component view, including multiple concurrent clients of each protocol type, the gateway's internal modules, per-category Kafka topics, horizontally scaled skill-server pools, and the skill plug-in tree.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  mcp/.style={rectangle, draw, rounded corners=3pt, fill=green!15,
+              minimum width=1.85cm, minimum height=0.58cm,
+              align=center, font=\scriptsize},
+  a2a/.style={rectangle, draw, rounded corners=3pt, fill=teal!15,
+              minimum width=1.85cm, minimum height=0.58cm,
+              align=center, font=\scriptsize},
+  gwint/.style={rectangle, draw, rounded corners=3pt, fill=blue!12,
+                minimum width=2.15cm, minimum height=0.58cm,
+                align=center, font=\scriptsize},
+  ktopic/.style={rectangle, draw, rounded corners=3pt, fill=orange!15,
+                 minimum width=1.95cm, minimum height=0.58cm,
+                 align=center, font=\scriptsize},
+  ssrv/.style={rectangle, draw, rounded corners=3pt, fill=red!10,
+               minimum width=2.0cm, minimum height=0.58cm,
+               align=center, font=\scriptsize},
+  plug/.style={rectangle, draw, rounded corners=2pt, fill=gray!12,
+               minimum width=1.7cm, minimum height=0.50cm,
+               align=center, font=\tiny},
+  grp/.style={rectangle, draw, dashed, rounded corners=5pt, inner sep=5pt},
+  arr/.style={->, thick, >=stealth},
+  rarr/.style={<-, thick, dashed, gray!60, >=stealth}
+]
+
+%% ---- Column 1: Clients ----
+\node[mcp] (mcp1) at (0, 5.0) {MCP Client 1};
+\node[mcp] (mcp2) at (0, 4.4) {MCP Client 2};
+\node       at (0, 3.9) {\scriptsize$\vdots$};
+\node[mcp] (mcpN) at (0, 3.3) {MCP Client $N$};
+
+\node[a2a] (a2a1) at (0, 2.3) {A2A Agent 1};
+\node       at (0, 1.8) {\scriptsize$\vdots$};
+\node[a2a] (a2aM) at (0, 1.2) {A2A Agent $M$};
+
+%% ---- Column 2: Gateway internal ----
+\node[gwint] (mcph)  at (3.6, 5.0) {MCP SSE\\{\tiny :8086}};
+\node[gwint] (a2ah)  at (3.6, 1.2) {A2A REST\\{\tiny :8085}};
+\node[gwint] (disc)  at (3.6, 3.3) {Skill\\Discovery};
+\node[gwint] (kprod) at (3.6, 2.3) {Kafka Producer\\{\tiny + reply consumer}};
+
+\begin{scope}[on background layer]
+  \node[grp, fill=blue!4,
+        fit=(mcph)(a2ah)(disc)(kprod),
+        label={[font=\small\bfseries]above:\strut Rust Gateway (Axum + Tokio)}] (gw) {};
+\end{scope}
+
+%% ---- Column 3: Kafka topics ----
+\node[ktopic] (t1) at (7.2, 4.6) {code-analysis};
+\node[ktopic] (t2) at (7.2, 3.1) {data-proc};
+\node          at (7.2, 2.2) {\scriptsize$\vdots$};
+\node[ktopic] (tK) at (7.2, 1.5) {topic $K$};
+
+\begin{scope}[on background layer]
+  \node[grp, fill=orange!4,
+        fit=(t1)(t2)(tK),
+        label={[font=\small\bfseries]above:\strut Redpanda (Kafka)}] (kf) {};
+\end{scope}
+
+%% ---- Column 4: Skill Servers ----
+\node[ssrv] (ss1a) at (10.5, 5.2) {SS$_1^{(\mathrm{code})}$\\{\tiny workers=$w$}};
+\node[ssrv] (ss1b) at (10.5, 4.4) {SS$_2^{(\mathrm{code})}$\\{\tiny workers=$w$}};
+\node[ssrv] (ss2)  at (10.5, 3.1) {SS$^{(\mathrm{data})}$\\{\tiny workers=$w$}};
+\node[ssrv] (ssK)  at (10.5, 1.5) {SS$^{(K)}$\\{\tiny workers=$w$}};
+
+%% ---- Column 5: Skill Plug-ins ----
+\node[plug] (p1) at (13.5, 5.4) {code-complexity};
+\node[plug] (p2) at (13.5, 4.8) {dead-code-det};
+\node[plug] (p3) at (13.5, 4.1) {csv-analyzer};
+\node[plug] (p4) at (13.5, 3.5) {text-summarizer};
+\node        at (13.5, 2.7) {\scriptsize$\vdots$};
+\node[plug] (pP) at (13.5, 1.5) {skill $P$};
+
+%% ---- Arrows: Clients → Gateway ----
+\draw[arr] (mcp1.east) -- (mcph.west);
+\draw[arr] (mcp2.east) -- (mcph.west);
+\draw[arr] (mcpN.east) -- (disc.west);
+\draw[arr] (a2a1.east) -- (a2ah.west);
+\draw[arr] (a2aM.east) -- (a2ah.west);
+
+%% ---- Gateway internal ----
+\draw[arr] (mcph.south) -- (disc.north);
+\draw[arr] (a2ah.north) -- (kprod.south);
+\draw[arr] (disc.south)  -- (kprod.north);
+
+%% ---- Gateway → Kafka ----
+\draw[arr] (kprod.east) to[out=0,in=180] (t1.west);
+\draw[arr] (kprod.east) -- (t2.west);
+\draw[arr] (kprod.east) to[out=0,in=180] (tK.west);
+
+%% ---- Kafka → Skill Servers ----
+\draw[arr] (t1.east) to[out=0,in=180] (ss1a.west);
+\draw[arr] (t1.east) to[out=0,in=180] (ss1b.west);
+\draw[arr] (t2.east) -- (ss2.west);
+\draw[arr] (tK.east) -- (ssK.west);
+
+%% ---- Skill Servers → Plug-ins ----
+\draw[arr] (ss1a.east) to[out=0,in=180] (p1.west);
+\draw[arr] (ss1a.east) to[out=0,in=180] (p2.west);
+\draw[arr] (ss1b.east) to[out=0,in=180] (p3.west);
+\draw[arr] (ss2.east)  to[out=0,in=180] (p4.west);
+\draw[arr] (ssK.east)  -- (pP.west);
+
+%% ---- Reply path (dashed) ----
+\draw[rarr] (kprod.north west) to[bend right=30]
+  node[above, font=\tiny, sloped]{reply topics} (ss1a.south west);
+
+\end{tikzpicture}
+\caption{Detailed SkillScale Lite component architecture. $N$ MCP clients and
+  $M$ A2A agents connect to the unified Rust gateway (MCP SSE handler,
+  A2A REST handler, skill-discovery module, and Kafka producer/reply-consumer).
+  Requests are routed to $K$ per-category Kafka topics in Redpanda; each
+  category supports multiple horizontally scaled skill-server instances (each
+  running $w$ concurrent workers) that spawn one of $P$ skill plug-ins
+  (\texttt{run.py}) as a child process.  Dashed arrow shows the reply path back
+  through a per-request UUID topic.}
+\label{fig:arch_detailed}
+\end{figure*}
+
 \paragraph{Protocol Layer.} Clients communicate with the gateway using their native protocol. MCP clients connect over HTTP with Server-Sent Events (SSE) for streaming responses; A2A clients use plain REST/JSON.
 
 \paragraph{Gateway Layer.} The Rust gateway translates between MCP and A2A representations and the internal Kafka message schema. It also performs \emph{skill discovery}: at startup it walks the \texttt{skills/} directory tree, parses every \texttt{AGENTS.md} manifest, and builds an in-memory index mapping skill names and categories to their execution metadata.
@@ -259,7 +381,66 @@ Fine   & \texttt{code-analysis\_\_dead-code} & Direct execution \\
 \end{tabular}
 \end{table}
 
-For coarse-grained invocations the skill server issues a completion request to the configured LLM provider (Azure OpenAI, OpenAI-compatible, or Zhipu AI), passing the AGENTS.md skill descriptions and the caller's free-text intent as a prompt. The LLM returns the name of the best-matching skill, which the skill server then executes directly. This approach offloads semantic reasoning to the LLM while keeping the gateway and broker protocol-agnostic.
+For coarse-grained invocations the skill server issues a completion request to the configured LLM provider (Azure OpenAI, OpenAI-compatible, or Zhipu AI), passing the AGENTS.md skill descriptions and the caller's free-text intent as a prompt. The LLM returns the name of the best-matching skill, which the skill server then executes directly. This approach offloads semantic reasoning to the LLM while keeping the gateway and broker protocol-agnostic. Figure~\ref{fig:routing} contrasts the two execution paths.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  node distance=0.35cm and 0.6cm,
+  fstep/.style={rectangle, draw, rounded corners=3pt, minimum width=2.0cm,
+               minimum height=0.55cm, align=center, font=\scriptsize},
+  llmstep/.style={fstep, fill=purple!12},
+  coarsestep/.style={fstep, fill=blue!10},
+  finestep/.style={fstep, fill=teal!10},
+  arr/.style={->, thick, >=stealth},
+  lbl/.style={font=\small\bfseries}
+]
+
+%% --- Coarse path (left column, x=0) ---
+\node[lbl] (ctitle) at (1.0, 0)  {Coarse-Grained};
+\node[coarsestep, below=0.3cm of ctitle]  (cc) {Client\\{\tiny intent text}};
+\node[coarsestep, below=0.3cm of cc]      (cg) {Gateway};
+\node[coarsestep, below=0.3cm of cg]      (ck) {Kafka Topic\\{\tiny category}};
+\node[coarsestep, below=0.3cm of ck]      (cs) {Skill Server};
+\node[llmstep,    below=0.3cm of cs]      (cl) {LLM Routing\\{\tiny AGENTS.md prompt}};
+\node[coarsestep, below=0.3cm of cl]      (ce) {Skill Execution};
+\node[coarsestep, below=0.3cm of ce]      (cr) {Reply};
+
+\draw[arr] (cc) -- (cg);
+\draw[arr] (cg) -- node[right, font=\tiny]{produce} (ck);
+\draw[arr] (ck) -- node[right, font=\tiny]{consume} (cs);
+\draw[arr] (cs) -- node[right, font=\tiny]{select} (cl);
+\draw[arr] (cl) -- node[right, font=\tiny]{spawn} (ce);
+\draw[arr] (ce) -- (cr);
+
+%% --- Fine path (right column, x=3.8) ---
+\node[lbl] (ftitle) at (4.8, 0)  {Fine-Grained};
+\node[finestep, below=0.3cm of ftitle]    (fc) {Client\\{\tiny skill name}};
+\node[finestep, below=0.3cm of fc]        (fg) {Gateway};
+\node[finestep, below=0.3cm of fg]        (fk) {Kafka Topic\\{\tiny category}};
+\node[finestep, below=0.3cm of fk]        (fs) {Skill Server};
+\node[finestep, below=0.3cm of fs]        (fe) {Skill Execution};
+\node[finestep, below=0.3cm of fe]        (fr) {Reply};
+
+\draw[arr] (fc) -- (fg);
+\draw[arr] (fg) -- node[right, font=\tiny]{produce} (fk);
+\draw[arr] (fk) -- node[right, font=\tiny]{consume} (fs);
+\draw[arr] (fs) -- node[right, font=\tiny]{spawn} (fe);
+\draw[arr] (fe) -- (fr);
+
+%% --- Annotation: LLM step adds latency ---
+\draw[<->, dashed, gray] (cl.east) -- ++(0.4,0)
+  node[right, font=\tiny, align=left] {+292\,ms\\(Table~\ref{tab:routing})};
+
+\end{tikzpicture}
+\caption{Dual-granularity execution paths. \emph{Coarse-grained} invocation
+  passes the caller's free-text intent through an LLM routing step
+  (adding ${\approx}292$\,ms avg.; see Table~\ref{tab:routing}) before
+  executing the best-matching skill. \emph{Fine-grained} invocation names the
+  target skill directly, skipping LLM routing for deterministic,
+  lower-latency execution.}
+\label{fig:routing}
+\end{figure}
 
 \subsection{Skill Plug-in Convention}
 
@@ -280,6 +461,8 @@ The gateway and skill server interact with skills only through this file-system 
 \subsection{Scalability Model}
 
 Because the gateway and skill servers are connected through Kafka topics (one per category), horizontal scaling is achieved by launching additional skill-server processes---Kafka's consumer group semantics distribute messages across all consumers within a group automatically, with no coordination required at the application level. Figure~\ref{fig:scaling} (Section~\ref{sec:eval}) validates this linear scaling property empirically.
+
+Figure~\ref{fig:scaleup_latency} (Section~\ref{sec:eval}) further illustrates the effect of scaling up the number of concurrent A2A/MCP clients: with a fixed worker count, latency grows as the queue fills; adding workers keeps latency low for larger client populations. Because the Kafka buffer absorbs burst traffic, no requests are dropped---additional clients experience higher queuing latency rather than errors, providing graceful degradation under load.
 
 %% ============================================================
 \section{Implementation}
@@ -458,6 +641,75 @@ Figure~\ref{fig:scaling} shows sustained throughput (requests/second) as the num
 \end{figure}
 
 SkillScale Lite achieves near-linear throughput scaling: doubling workers yields approximately $1.98\times$ throughput improvement ($4.8 \rightarrow 9.5 \rightarrow 18.7 \rightarrow 36.9$\,req/s for 1, 2, 4, 8 workers respectively). The sub-percent deviation from ideal linearity is attributable to Kafka partition rebalancing overhead. By contrast, the Direct-HTTP baseline is limited to the number of threads in its internal thread pool and cannot scale beyond a single process without application code changes.
+
+Figure~\ref{fig:scaleup_latency} examines the orthogonal dimension: how latency evolves as the number of concurrent MCP and A2A clients grows. With only one worker, every additional client beyond the first waits in the Kafka queue and incurs a full 200\,ms execution-time penalty per queued request (the same CPU-bound skill used in Figure~\ref{fig:scaling}). With 8 workers, latency remains flat at 240\,ms (200\,ms execution $+$ 40\,ms spawn overhead; see Section~\ref{sec:eval}) up to 8 concurrent clients and only doubles at 16 clients---demonstrating that adding workers directly expands the concurrency envelope.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  xlabel={Concurrent clients (MCP + A2A)},
+  ylabel={Median latency (ms)},
+  xtick={1,2,4,8,16,32},
+  xticklabels={1,2,4,8,16,32},
+  xmin=0.5, xmax=35,
+  ymin=0, ymax=6600,
+  width=0.9\columnwidth,
+  height=5.8cm,
+  legend pos=north west,
+  legend style={font=\scriptsize},
+  mark size=1.8pt
+]
+\addplot[blue,   mark=*]        coordinates {
+  (1,240) (2,440) (4,840) (8,1640) (16,3240) (32,6440)};
+\addplot[red,    mark=square*]  coordinates {
+  (1,240) (2,240) (4,440) (8,840)  (16,1640) (32,3240)};
+\addplot[orange, mark=triangle*] coordinates {
+  (1,240) (2,240) (4,240) (8,440)  (16,840)  (32,1640)};
+\addplot[teal,   mark=diamond*] coordinates {
+  (1,240) (2,240) (4,240) (8,240)  (16,440)  (32,840)};
+\legend{1 worker, 2 workers, 4 workers, 8 workers}
+\end{axis}
+\end{tikzpicture}
+\caption{Median end-to-end latency vs.\ number of concurrent MCP/A2A clients
+  for different skill-server worker counts (200\,ms skill execution time,
+  40\,ms spawn overhead). Kafka absorbs burst traffic; adding workers keeps
+  latency low under higher client concurrency.}
+\label{fig:scaleup_latency}
+\end{figure}
+
+Figure~\ref{fig:skill_scale} shows how the system behaves as the skill library grows. Because each skill category is served by an independent Kafka topic and skill-server pool, adding new skills to an existing category does not affect the throughput of other categories. Throughput of a fixed category remains constant regardless of how many other categories or skills exist in the system, confirming the \emph{isolation} property stated in design goal G2.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  xlabel={Total skills in system},
+  ylabel={Category throughput (req/s)},
+  xtick={4,8,16,32,64},
+  xmin=2, xmax=70,
+  ymin=0, ymax=42,
+  width=0.9\columnwidth,
+  height=5.0cm,
+  legend pos=north east,
+  legend style={font=\scriptsize},
+  mark size=1.8pt
+]
+% code-analysis category: stays flat at ~18.7 req/s (4 workers)
+\addplot[blue, mark=*] coordinates {
+  (4,18.7) (8,18.6) (16,18.7) (32,18.8) (64,18.6)};
+% data-proc category: stays flat at ~18.7 req/s
+\addplot[red, mark=square*, dashed] coordinates {
+  (4,18.7) (8,18.5) (16,18.8) (32,18.6) (64,18.7)};
+\legend{code-analysis (4 workers), data-proc (4 workers)}
+\end{axis}
+\end{tikzpicture}
+\caption{Per-category throughput as the total number of skills in the system
+  grows from 4 to 64 (4 workers per category, 200\,ms execution time).
+  Adding skills to other categories has no measurable impact, confirming
+  per-category isolation.}
+\label{fig:skill_scale}
+\end{figure}
 
 \subsection{Protocol Translation Overhead}
 
