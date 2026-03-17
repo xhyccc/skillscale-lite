@@ -127,6 +127,20 @@ SkillScale Lite/
 
 LLM_PROVIDER=azure|openai|zhipu で選択。
 
+## 🔗 関連プロジェクト
+
+このコードベースをスキャンし GitHub を検索した結果、以下のリポジトリが同様の MCP ↔ A2A プロトコルブリッジ問題を解決しており、同等または補完的なプロジェクトとして挙げられます：
+
+| リポジトリ | 言語 | Stars | 説明 |
+|---|---|---|---|
+| [GongRzhe/A2A-MCP-Server](https://github.com/GongRzhe/A2A-MCP-Server) | Python | ⭐ 145 | MCP と A2A プロトコルを橋渡しし、Claude などの MCP 対応アシスタントが A2A エージェントを呼び出せるようにする。*(アーカイブ済み)* |
+| [jinyitao123/a2a-gateway](https://github.com/jinyitao123/a2a-gateway) | TypeScript | — | A2A + MCP ブリッジ。内部ボット間通信、外部エージェント検出、Streamable HTTP ツールをサポート。 |
+| [peerclaw/peerclaw-server](https://github.com/peerclaw/peerclaw-server) | Go | — | A2A/MCP/ACP プロトコルブリッジを備えたエージェントレジストリ。レピュテーションエンジンとアクセス制御付き。 |
+| [anatolykoptev/openclaw-a2a-bridge](https://github.com/anatolykoptev/openclaw-a2a-bridge) | JavaScript | — | A2A プロトコルブリッジプラグイン——エージェントカード、JSON-RPC エンドポイント、リモートエージェントツール。 |
+| [eduardpetraeus-lab/protocol-bridge](https://github.com/eduardpetraeus-lab/protocol-bridge) | — | — | MCP と A2A プロトコルのブリッジ。 |
+
+**SkillScale Lite の違い**：上記プロジェクトとは異なり、SkillScale Lite は**分散実行レイヤー**（Kafka/Redpanda）、LLM によるスキルマッチング、ネイティブプロセスによるスキル起動、OpenSkills フォルダ規約を提供しており、プロトコルアダプタに留まらない完全なスキル実行プラットフォームです。
+
 ## 📄 License
 
 MIT

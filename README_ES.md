@@ -128,6 +128,20 @@ Todas las habilidades usan skills/llm_utils.py, que lee .env.
 
 LLM_PROVIDER=azure|openai|zhipu para seleccionar.
 
+## 🔗 Proyectos Relacionados
+
+Tras escanear este repositorio y buscar en GitHub, los siguientes repositorios abordan un problema similar de puente de protocolo MCP ↔ A2A y pueden considerarse proyectos equivalentes o complementarios:
+
+| Repositorio | Lenguaje | Stars | Descripción |
+|---|---|---|---|
+| [GongRzhe/A2A-MCP-Server](https://github.com/GongRzhe/A2A-MCP-Server) | Python | ⭐ 145 | Conecta MCP con el protocolo A2A para que asistentes compatibles con MCP (p. ej. Claude) puedan llamar a agentes A2A. *(archivado)* |
+| [jinyitao123/a2a-gateway](https://github.com/jinyitao123/a2a-gateway) | TypeScript | — | Puente A2A + MCP con llamadas internas entre bots, descubrimiento externo de agentes y herramientas Streamable HTTP. |
+| [peerclaw/peerclaw-server](https://github.com/peerclaw/peerclaw-server) | Go | — | Registro de agentes con puente de protocolos A2A/MCP/ACP, motor de reputación y control de acceso. |
+| [anatolykoptev/openclaw-a2a-bridge](https://github.com/anatolykoptev/openclaw-a2a-bridge) | JavaScript | — | Plugin de puente del protocolo A2A — tarjeta de agente, endpoint JSON-RPC y herramientas de agente remoto. |
+| [eduardpetraeus-lab/protocol-bridge](https://github.com/eduardpetraeus-lab/protocol-bridge) | — | — | Puente entre MCP y el protocolo A2A. |
+
+**Cómo se diferencia SkillScale Lite**: a diferencia de los proyectos anteriores, SkillScale Lite añade una **capa de ejecución distribuida** (Kafka/Redpanda) con selección de habilidades mediante LLM, lanzamiento de habilidades como procesos nativos y una convención de carpetas OpenSkills, convirtiéndolo en una plataforma completa de ejecución de habilidades y no solo un adaptador de protocolo.
+
 ## 📄 License
 
 MIT

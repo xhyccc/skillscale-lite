@@ -127,6 +127,20 @@ SkillScale Lite/
 
 设置 LLM_PROVIDER=azure|openai|zhipu 选择模型。
 
+## 🔗 相关项目
+
+在扫描本代码库并检索 GitHub 后，以下仓库解决了类似的 MCP ↔ A2A 协议桥接问题，可视为等价或互补项目：
+
+| 仓库 | 语言 | Stars | 描述 |
+|---|---|---|---|
+| [GongRzhe/A2A-MCP-Server](https://github.com/GongRzhe/A2A-MCP-Server) | Python | ⭐ 145 | 将 MCP 与 A2A 协议桥接，使 Claude 等 MCP 兼容助手能调用 A2A 智能体。*(已归档)* |
+| [jinyitao123/a2a-gateway](https://github.com/jinyitao123/a2a-gateway) | TypeScript | — | A2A + MCP 桥接，支持内部机器人互调、外部智能体发现和 Streamable HTTP 工具。 |
+| [peerclaw/peerclaw-server](https://github.com/peerclaw/peerclaw-server) | Go | — | 支持 A2A/MCP/ACP 协议桥接的智能体注册中心，含声誉引擎和访问控制。 |
+| [anatolykoptev/openclaw-a2a-bridge](https://github.com/anatolykoptev/openclaw-a2a-bridge) | JavaScript | — | A2A 协议桥接插件——智能体名片、JSON-RPC 端点和远程智能体工具。 |
+| [eduardpetraeus-lab/protocol-bridge](https://github.com/eduardpetraeus-lab/protocol-bridge) | — | — | MCP 与 A2A 协议之间的桥接器。 |
+
+**SkillScale Lite 的差异**：与上述项目不同，SkillScale Lite 额外提供了**分布式执行层**（Kafka/Redpanda）、基于 LLM 的技能匹配、原生进程技能调度以及 OpenSkills 目录规范——使其成为完整的技能执行平台，而不仅是协议适配器。
+
 ## 📄 License
 
 MIT
