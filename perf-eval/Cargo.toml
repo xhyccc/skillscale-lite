@@ -1,0 +1,30 @@
+[package]
+name = "perf-eval"
+version = "0.1.0"
+edition = "2021"
+description = "Performance evaluation suite for SkillScale Lite — concurrent dispatch, serialization, and skill-parsing benchmarks"
+
+# ── Runtime & async ──────────────────────────────────────────────────────────
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+
+# ── Benchmark harness ────────────────────────────────────────────────────────
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+
+# ── Benchmark targets ────────────────────────────────────────────────────────
+
+[[bench]]
+name = "concurrent_dispatch"
+harness = false
+
+[[bench]]
+name = "json_serialization"
+harness = false
+
+[[bench]]
+name = "skill_parsing"
+harness = false
