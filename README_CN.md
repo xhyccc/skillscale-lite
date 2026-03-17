@@ -139,7 +139,22 @@ SkillScale Lite/
 | [anatolykoptev/openclaw-a2a-bridge](https://github.com/anatolykoptev/openclaw-a2a-bridge) | JavaScript | — | A2A 协议桥接插件——智能体名片、JSON-RPC 端点和远程智能体工具。 |
 | [eduardpetraeus-lab/protocol-bridge](https://github.com/eduardpetraeus-lab/protocol-bridge) | — | — | MCP 与 A2A 协议之间的桥接器。 |
 
-**SkillScale Lite 的差异**：与上述项目不同，SkillScale Lite 额外提供了**分布式执行层**（Kafka/Redpanda）、基于 LLM 的技能匹配、原生进程技能调度以及 OpenSkills 目录规范——使其成为完整的技能执行平台，而不仅是协议适配器。
+### 🏆 SkillScale Lite 的核心优势
+
+上述所有项目都是**协议适配器**——仅在 MCP 与 A2A 之间做协议转换。SkillScale Lite 是一个**完整的技能执行平台**。以下表格列出了关键差异：
+
+| 能力 | SkillScale Lite | 同类项目 |
+|---|---|---|
+| **分布式队列** | ✅ Kafka/Redpanda——异步、持久化、水平可扩展 | ❌ 仅直接 HTTP 调用 |
+| **水平扩展** | ✅ 增加更多 skill-server 进程；Kafka 自动分发负载 | ❌ 单进程或单节点 |
+| **LLM 意图路由** | ✅ 粗粒度请求通过 LLM 自动路由到最佳技能 | ❌ 手动路由/固定端点 |
+| **可插拔技能执行** | ✅ 在 `skills/` 中新建文件夹即可添加技能，无需修改网关代码 | ❌ 硬编码智能体列表 |
+| **高性能网关** | ✅ Rust (axum + tokio)——低延迟、低内存占用 | ⚠️ Python / TypeScript / Go |
+| **双粒度调用** | ✅ 粗粒度（LLM 路由）*和*细粒度（按名称直接调用）均支持 | ❌ 仅粗粒度 |
+| **原生进程隔离** | ✅ 技能以原生 OS 进程运行，而非容器 | ❌ 不适用 |
+| **多 LLM 提供商支持** | ✅ Azure OpenAI、OpenAI 兼容接口、智谱 AI | ❌ 单一提供商 |
+
+简而言之，SkillScale Lite 是该领域唯一将**协议桥接 + 分布式执行 + LLM 智能路由 + 可扩展技能插件**融为一体的生产就绪系统。
 
 ## 📄 License
 

@@ -145,7 +145,22 @@ After scanning this codebase and searching GitHub, the following repositories ad
 | [anatolykoptev/openclaw-a2a-bridge](https://github.com/anatolykoptev/openclaw-a2a-bridge) | JavaScript | — | A2A protocol bridge plugin — agent card, JSON-RPC endpoint, and remote agent tools. |
 | [eduardpetraeus-lab/protocol-bridge](https://github.com/eduardpetraeus-lab/protocol-bridge) | — | — | Bridge between MCP and the A2A protocol. |
 
-**How SkillScale Lite differs**: unlike the projects above, SkillScale Lite adds a **distributed execution layer** (Kafka/Redpanda) with LLM-powered skill matching, native-process skill spawning, and an OpenSkills folder convention — making it a full skill-execution platform rather than just a protocol adapter.
+### 🏆 Major Advantages of SkillScale Lite
+
+All of the projects above are **protocol adapters** — they translate between MCP and A2A but do nothing beyond that. SkillScale Lite is a **full skill-execution platform**. The table below summarises the key differences:
+
+| Capability | SkillScale Lite | Comparable projects |
+|---|---|---|
+| **Distributed queue** | ✅ Kafka/Redpanda — async, durable, horizontally scalable | ❌ Direct HTTP call only |
+| **Horizontal scaling** | ✅ Add more skill-server processes; Kafka distributes load automatically | ❌ Single-process or single-node |
+| **LLM-powered intent routing** | ✅ Coarse-grained requests are routed to the best skill via LLM | ❌ Manual routing / fixed endpoint |
+| **Pluggable skill execution** | ✅ Drop a folder into `skills/` — zero code changes to the gateway | ❌ Hard-coded agent list |
+| **High-performance gateway** | ✅ Rust (axum + tokio) — low latency, low memory | ⚠️ Python / TypeScript / Go |
+| **Dual invocation granularity** | ✅ Coarse (LLM routes) *and* fine (direct by name) via MCP | ❌ Coarse only |
+| **Native process isolation** | ✅ Skills run as OS-native processes, not containers | ❌ Not applicable |
+| **Multi-LLM provider support** | ✅ Azure OpenAI, OpenAI-compatible, Zhipu AI | ❌ Single provider |
+
+In short, SkillScale Lite is the only project in this space that combines **protocol bridging + distributed execution + LLM-powered routing + extensible skill plugins** in a single production-ready system.
 
 ## 📄 License
 

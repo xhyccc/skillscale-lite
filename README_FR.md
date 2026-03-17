@@ -140,7 +140,22 @@ Après avoir analysé ce dépôt et recherché sur GitHub, les dépôts suivants
 | [anatolykoptev/openclaw-a2a-bridge](https://github.com/anatolykoptev/openclaw-a2a-bridge) | JavaScript | — | Plugin de pont du protocole A2A — carte d'agent, point de terminaison JSON-RPC et outils d'agent distant. |
 | [eduardpetraeus-lab/protocol-bridge](https://github.com/eduardpetraeus-lab/protocol-bridge) | — | — | Pont entre MCP et le protocole A2A. |
 
-**En quoi SkillScale Lite se distingue** : contrairement aux projets ci-dessus, SkillScale Lite ajoute une **couche d'exécution distribuée** (Kafka/Redpanda) avec correspondance de compétences pilotée par LLM, lancement de compétences en tant que processus natifs et une convention de dossiers OpenSkills — en faisant une plateforme d'exécution de compétences complète, et non un simple adaptateur de protocole.
+### 🏆 Principaux Avantages de SkillScale Lite
+
+Tous les projets ci-dessus sont des **adaptateurs de protocole** — ils se contentent de traduire entre MCP et A2A. SkillScale Lite est une **plateforme d'exécution de compétences complète**. Le tableau suivant résume les différences clés :
+
+| Capacité | SkillScale Lite | Projets comparables |
+|---|---|---|
+| **File d'attente distribuée** | ✅ Kafka/Redpanda — asynchrone, persistant, scalable horizontalement | ❌ Appel HTTP direct uniquement |
+| **Mise à l'échelle horizontale** | ✅ Ajouter des processus skill-server ; Kafka distribue la charge automatiquement | ❌ Processus unique / nœud unique |
+| **Routage d'intention par LLM** | ✅ Les requêtes grossières sont routées vers la meilleure compétence par LLM | ❌ Routage manuel / endpoint fixe |
+| **Exécution de compétences enfichable** | ✅ Ajouter un dossier dans `skills/` — aucune modification du gateway | ❌ Liste d'agents codée en dur |
+| **Gateway haute performance** | ✅ Rust (axum + tokio) — faible latence, faible mémoire | ⚠️ Python / TypeScript / Go |
+| **Double granularité d'invocation** | ✅ Grossière (LLM route) *et* fine (directe par nom) via MCP | ❌ Grossière uniquement |
+| **Isolation de processus natif** | ✅ Les compétences s'exécutent en tant que processus OS natifs, pas des conteneurs | ❌ Non applicable |
+| **Support multi-fournisseur LLM** | ✅ Azure OpenAI, compatible OpenAI, Zhipu AI | ❌ Fournisseur unique |
+
+En résumé, SkillScale Lite est le seul projet dans cet espace qui combine **pont de protocole + exécution distribuée + routage LLM + plugins de compétences extensibles** dans un seul système prêt pour la production.
 
 ## 📄 License
 

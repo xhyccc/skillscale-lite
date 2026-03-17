@@ -139,7 +139,22 @@ LLM_PROVIDER=azure|openai|zhipu で選択。
 | [anatolykoptev/openclaw-a2a-bridge](https://github.com/anatolykoptev/openclaw-a2a-bridge) | JavaScript | — | A2A プロトコルブリッジプラグイン——エージェントカード、JSON-RPC エンドポイント、リモートエージェントツール。 |
 | [eduardpetraeus-lab/protocol-bridge](https://github.com/eduardpetraeus-lab/protocol-bridge) | — | — | MCP と A2A プロトコルのブリッジ。 |
 
-**SkillScale Lite の違い**：上記プロジェクトとは異なり、SkillScale Lite は**分散実行レイヤー**（Kafka/Redpanda）、LLM によるスキルマッチング、ネイティブプロセスによるスキル起動、OpenSkills フォルダ規約を提供しており、プロトコルアダプタに留まらない完全なスキル実行プラットフォームです。
+### 🏆 SkillScale Lite の主な優位点
+
+上記のプロジェクトはすべて**プロトコルアダプタ**です——MCP と A2A 間のプロトコル変換しか行いません。SkillScale Lite は**完全なスキル実行プラットフォーム**です。以下の表に主な違いをまとめます：
+
+| 機能 | SkillScale Lite | 同等プロジェクト |
+|---|---|---|
+| **分散キュー** | ✅ Kafka/Redpanda——非同期・永続化・水平スケール可能 | ❌ 直接 HTTP 呼び出しのみ |
+| **水平スケーリング** | ✅ skill-server プロセスを追加するだけ；Kafka が自動で負荷分散 | ❌ 単一プロセス/単一ノード |
+| **LLM 意図ルーティング** | ✅ 粗粒度リクエストを LLM が最適なスキルへ自動ルーティング | ❌ 手動ルーティング/固定エンドポイント |
+| **プラガブルスキル実行** | ✅ `skills/` にフォルダを追加するだけ——ゲートウェイ変更不要 | ❌ エージェントリストがハードコード |
+| **高性能ゲートウェイ** | ✅ Rust (axum + tokio)——低レイテンシ・低メモリ | ⚠️ Python / TypeScript / Go |
+| **二段階呼び出し粒度** | ✅ 粗粒度（LLM ルーティング）*と*細粒度（名前で直接指定）の両方 | ❌ 粗粒度のみ |
+| **ネイティブプロセス分離** | ✅ スキルはコンテナでなくネイティブ OS プロセスとして実行 | ❌ 該当なし |
+| **マルチ LLM プロバイダ** | ✅ Azure OpenAI、OpenAI 互換、Zhipu AI | ❌ 単一プロバイダ |
+
+一言で言えば、SkillScale Lite は**プロトコルブリッジ + 分散実行 + LLM ルーティング + 拡張可能スキルプラグイン**をすべて兼ね備えた、この分野唯一のプロダクション対応システムです。
 
 ## 📄 License
 
