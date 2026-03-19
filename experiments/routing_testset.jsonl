@@ -1,0 +1,200 @@
+{"text": "Find outliers using the IQR method on numeric columns.", "skill": "csv-analyzer"}
+{"text": "Provide a complexity heatmap description for this module.", "skill": "code-complexity"}
+{"text": "Extract the who, what, when, where, and why from this text.", "skill": "text-summarizer"}
+{"text": "Find variables shadowed and never used in nested scopes.", "skill": "dead-code-detector"}
+{"text": "What correlations exist between the numeric columns?", "skill": "csv-analyzer"}
+{"text": "How complex are the branches and loops in the following snippet?", "skill": "code-complexity"}
+{"text": "Can you compute the cyclomatic complexity of the following snippet?", "skill": "code-complexity"}
+{"text": "Scan the following code and report its complexity.", "skill": "code-complexity"}
+{"text": "Detect data drift by comparing two CSV snapshots.", "skill": "csv-analyzer"}
+{"text": "Tell me the cyclomatic number for each method.", "skill": "code-complexity"}
+{"text": "Produce a summary suitable for a busy executive.", "skill": "text-summarizer"}
+{"text": "Scan for dead assignments \u2014 variables written but never read.", "skill": "dead-code-detector"}
+{"text": "Check if this code has high cyclomatic complexity.", "skill": "code-complexity"}
+{"text": "Find duplicate rows in the CSV below.", "skill": "csv-analyzer"}
+{"text": "Describe the schema of this CSV file.", "skill": "csv-analyzer"}
+{"text": "Check for leading or trailing whitespace in string columns.", "skill": "csv-analyzer"}
+{"text": "Detect obsolete code blocks in the following file.", "skill": "dead-code-detector"}
+{"text": "What complexity metrics apply to the following sorting algorithm?", "skill": "code-complexity"}
+{"text": "Detect dead code in the exception hierarchy below.", "skill": "dead-code-detector"}
+{"text": "Provide a data quality report for the CSV.", "skill": "csv-analyzer"}
+{"text": "Quantify the decision points in this routine.", "skill": "code-complexity"}
+{"text": "What conclusions does the following text reach?", "skill": "text-summarizer"}
+{"text": "Summarise this CSV for use in a business intelligence report.", "skill": "csv-analyzer"}
+{"text": "What are the next steps outlined in the following document?", "skill": "text-summarizer"}
+{"text": "Check this file for any functions that do nothing and are never called.", "skill": "dead-code-detector"}
+{"text": "Report all unused imports in this script.", "skill": "dead-code-detector"}
+{"text": "Write a short abstract for the following paper.", "skill": "text-summarizer"}
+{"text": "Analyse the structural complexity of the following class.", "skill": "code-complexity"}
+{"text": "Condense this press release into two sentences.", "skill": "text-summarizer"}
+{"text": "Check the CSV for formatting inconsistencies.", "skill": "csv-analyzer"}
+{"text": "Report any code that follows an infinite loop.", "skill": "dead-code-detector"}
+{"text": "Analyse the CSV and detect class imbalance.", "skill": "csv-analyzer"}
+{"text": "What percentage of values are missing per column?", "skill": "csv-analyzer"}
+{"text": "Are there any columns that are entirely empty?", "skill": "csv-analyzer"}
+{"text": "Analyse the CSV and produce a pivot table summary.", "skill": "csv-analyzer"}
+{"text": "Identify unreachable branches in the code below.", "skill": "dead-code-detector"}
+{"text": "Give an executive summary of the report below.", "skill": "text-summarizer"}
+{"text": "What is the essential complexity of this procedure?", "skill": "code-complexity"}
+{"text": "Identify unreachable catch blocks.", "skill": "dead-code-detector"}
+{"text": "Summarise this customer support ticket.", "skill": "text-summarizer"}
+{"text": "Identify unused decorator definitions.", "skill": "dead-code-detector"}
+{"text": "Identify all stub functions that are never invoked.", "skill": "dead-code-detector"}
+{"text": "Compute the mode of each categorical column.", "skill": "csv-analyzer"}
+{"text": "Compute complexity metrics before and after refactoring.", "skill": "code-complexity"}
+{"text": "Are there any outliers in this dataset?", "skill": "csv-analyzer"}
+{"text": "Briefly describe what the following document is about.", "skill": "text-summarizer"}
+{"text": "Complexity check: nested loops and multiple return points.", "skill": "code-complexity"}
+{"text": "Summarise the meeting notes below.", "skill": "text-summarizer"}
+{"text": "Is this code too complex for a junior developer to maintain?", "skill": "code-complexity"}
+{"text": "Scan for zombie code \u2014 code that was meant to be removed.", "skill": "dead-code-detector"}
+{"text": "Identify over-protected code that can never run.", "skill": "dead-code-detector"}
+{"text": "What is the main message of this passage?", "skill": "text-summarizer"}
+{"text": "Does this function exceed the recommended complexity threshold?", "skill": "code-complexity"}
+{"text": "What is the range of values in the 'price' column?", "skill": "csv-analyzer"}
+{"text": "Summarize this document in three sentences.", "skill": "text-summarizer"}
+{"text": "Rate the code complexity of the snippet below.", "skill": "code-complexity"}
+{"text": "Give a high-level summary of the architecture described in this text.", "skill": "text-summarizer"}
+{"text": "Which functions are never called in this module?", "skill": "dead-code-detector"}
+{"text": "Compute the complexity of this state-machine implementation.", "skill": "code-complexity"}
+{"text": "Distil the essential information from this text.", "skill": "text-summarizer"}
+{"text": "Measure the cyclomatic complexity of each method in this class.", "skill": "code-complexity"}
+{"text": "Identify columns with high null rates in the CSV data.", "skill": "csv-analyzer"}
+{"text": "Detect unreachable statements after return.", "skill": "dead-code-detector"}
+{"text": "Find unreachable code after an unconditional continue.", "skill": "dead-code-detector"}
+{"text": "Find dead code introduced by copy-paste.", "skill": "dead-code-detector"}
+{"text": "Are there any unreferenced class attributes?", "skill": "dead-code-detector"}
+{"text": "Is there any dead code in this implementation?", "skill": "dead-code-detector"}
+{"text": "Report the code complexity and suggest simplification opportunities.", "skill": "code-complexity"}
+{"text": "How many rows and columns does this dataset contain?", "skill": "csv-analyzer"}
+{"text": "Detect unreachable else-blocks in the snippet below.", "skill": "dead-code-detector"}
+{"text": "List modules that are imported but never accessed.", "skill": "dead-code-detector"}
+{"text": "Identify dead functions in the following class.", "skill": "dead-code-detector"}
+{"text": "How many unique values does each categorical column have?", "skill": "csv-analyzer"}
+{"text": "Extract the main ideas from the text below.", "skill": "text-summarizer"}
+{"text": "What is the core argument of this passage?", "skill": "text-summarizer"}
+{"text": "How many linearly independent paths are there through this code?", "skill": "code-complexity"}
+{"text": "Detect dead branches in this switch-case equivalent.", "skill": "dead-code-detector"}
+{"text": "What problem does the following text describe, and how is it solved?", "skill": "text-summarizer"}
+{"text": "What are the column types in this CSV file?", "skill": "csv-analyzer"}
+{"text": "Condense this email into a two-line summary.", "skill": "text-summarizer"}
+{"text": "Find code that can never be executed.", "skill": "dead-code-detector"}
+{"text": "Flag all symbols that are defined but never referenced.", "skill": "dead-code-detector"}
+{"text": "What are the key points of the following passage?", "skill": "text-summarizer"}
+{"text": "Give a structured summary with introduction, body, and conclusion.", "skill": "text-summarizer"}
+{"text": "Give a complexity breakdown per function in this module.", "skill": "code-complexity"}
+{"text": "Find methods that are defined in the base class but overridden and never called.", "skill": "dead-code-detector"}
+{"text": "Analyse the attached CSV data and summarise the key statistics.", "skill": "csv-analyzer"}
+{"text": "How complex is the error-handling logic in the following code?", "skill": "code-complexity"}
+{"text": "Are there any unused constants in this module?", "skill": "dead-code-detector"}
+{"text": "Find all unreachable code paths.", "skill": "dead-code-detector"}
+{"text": "Find all rows where numeric columns contain negative values.", "skill": "csv-analyzer"}
+{"text": "Which variables are declared but never used?", "skill": "dead-code-detector"}
+{"text": "Analyse the branching complexity of this recursive function.", "skill": "code-complexity"}
+{"text": "List all dead-code issues to address before the code review.", "skill": "dead-code-detector"}
+{"text": "Analyse the nesting depth and branching factor of the code.", "skill": "code-complexity"}
+{"text": "Identify code blocks guarded by always-false conditions.", "skill": "dead-code-detector"}
+{"text": "Detect unused lambda expressions.", "skill": "dead-code-detector"}
+{"text": "Detect imports that are never used in the following file.", "skill": "dead-code-detector"}
+{"text": "Report unused keyword arguments in these function definitions.", "skill": "dead-code-detector"}
+{"text": "Condense the interview transcript below.", "skill": "text-summarizer"}
+{"text": "Find missing values in the CSV below.", "skill": "csv-analyzer"}
+{"text": "Assess the maintainability and complexity of this code.", "skill": "code-complexity"}
+{"text": "Create a bullet-point summary of the passage.", "skill": "text-summarizer"}
+{"text": "What is the distribution of the 'age' column?", "skill": "csv-analyzer"}
+{"text": "Summarise the user feedback in the following survey results.", "skill": "text-summarizer"}
+{"text": "List all symbols that exist but are never called.", "skill": "dead-code-detector"}
+{"text": "Extract the key metrics from this performance report.", "skill": "text-summarizer"}
+{"text": "Analyse the CSV and report any data quality issues.", "skill": "csv-analyzer"}
+{"text": "Are there any date columns with invalid formats?", "skill": "csv-analyzer"}
+{"text": "Are there any local variables that are assigned but not read?", "skill": "dead-code-detector"}
+{"text": "Check for orphaned helper functions.", "skill": "dead-code-detector"}
+{"text": "Condense this lengthy technical document into a short overview.", "skill": "text-summarizer"}
+{"text": "Measure the complexity of each branch in this parser.", "skill": "code-complexity"}
+{"text": "What are the action items mentioned in this text?", "skill": "text-summarizer"}
+{"text": "Compute descriptive statistics for each numeric column.", "skill": "csv-analyzer"}
+{"text": "Find rows with unexpected data types in the CSV.", "skill": "csv-analyzer"}
+{"text": "Produce a concise summary of this project proposal.", "skill": "text-summarizer"}
+{"text": "Summarise the key risks identified in this report.", "skill": "text-summarizer"}
+{"text": "Estimate the number of test cases needed to cover all branches.", "skill": "code-complexity"}
+{"text": "Summarise the CSV dataset for a data science team review.", "skill": "csv-analyzer"}
+{"text": "Compute the Halstead complexity metrics for this code.", "skill": "code-complexity"}
+{"text": "Measure the McCabe complexity of this module.", "skill": "code-complexity"}
+{"text": "Please summarise the following article.", "skill": "text-summarizer"}
+{"text": "Detect dead event handlers in the following module.", "skill": "dead-code-detector"}
+{"text": "Condense the following changelog into three bullet points.", "skill": "text-summarizer"}
+{"text": "Identify highly correlated feature pairs in the CSV.", "skill": "csv-analyzer"}
+{"text": "Remove dead code suggestions for this module.", "skill": "dead-code-detector"}
+{"text": "Give me a concise summary of the text below.", "skill": "text-summarizer"}
+{"text": "Summarise the following news article in one paragraph.", "skill": "text-summarizer"}
+{"text": "What is the cognitive complexity of this algorithm?", "skill": "code-complexity"}
+{"text": "Summarise the following policy document for a general audience.", "skill": "text-summarizer"}
+{"text": "Is this code suitable for high-reliability systems given its complexity?", "skill": "code-complexity"}
+{"text": "How many independent paths exist through this code?", "skill": "code-complexity"}
+{"text": "Give me a complexity score for the following implementation.", "skill": "code-complexity"}
+{"text": "Condense the following content into a short paragraph.", "skill": "text-summarizer"}
+{"text": "Find rows where the 'email' column is malformed.", "skill": "csv-analyzer"}
+{"text": "How complex is this Python function?", "skill": "code-complexity"}
+{"text": "Give me a two-sentence summary of the following blog post.", "skill": "text-summarizer"}
+{"text": "Analyse the CSV and produce a histogram description per column.", "skill": "csv-analyzer"}
+{"text": "Write a one-sentence summary of this article.", "skill": "text-summarizer"}
+{"text": "This function has several nested if-else blocks \u2014 how complex is it?", "skill": "code-complexity"}
+{"text": "Extract the five most important facts from this document.", "skill": "text-summarizer"}
+{"text": "Count the number of conditions and report the cyclomatic complexity.", "skill": "code-complexity"}
+{"text": "Summarise the top 10 rows and last 10 rows of the dataset.", "skill": "csv-analyzer"}
+{"text": "Compute the mean, median, and standard deviation of each column.", "skill": "csv-analyzer"}
+{"text": "What is the scope of the following project description?", "skill": "text-summarizer"}
+{"text": "Assess code quality metrics including complexity for this script.", "skill": "code-complexity"}
+{"text": "Summarize the following research abstract.", "skill": "text-summarizer"}
+{"text": "I need a complexity report for this Python module.", "skill": "code-complexity"}
+{"text": "Give a plain summary of the technical specification below.", "skill": "text-summarizer"}
+{"text": "Detect anomalies in the time-series CSV data.", "skill": "csv-analyzer"}
+{"text": "Summarise this software requirements document.", "skill": "text-summarizer"}
+{"text": "Identify which part of the code contributes most to its complexity.", "skill": "code-complexity"}
+{"text": "Give me the complexity metrics for this function.", "skill": "code-complexity"}
+{"text": "Summarise the distribution of values in each column.", "skill": "csv-analyzer"}
+{"text": "Compute a frequency table for the 'category' column.", "skill": "csv-analyzer"}
+{"text": "Profile each column: type, nulls, unique values, min/max.", "skill": "csv-analyzer"}
+{"text": "Find cleanup code that is never reached.", "skill": "dead-code-detector"}
+{"text": "Compute quartiles for the numeric columns in this dataset.", "skill": "csv-analyzer"}
+{"text": "Provide a TL;DR for the following content.", "skill": "text-summarizer"}
+{"text": "This method has multiple early returns \u2014 what is its complexity?", "skill": "code-complexity"}
+{"text": "Evaluate complexity: count branches, loops, and conditions.", "skill": "code-complexity"}
+{"text": "Analyse this sales CSV and identify trends.", "skill": "csv-analyzer"}
+{"text": "Provide a brief overview of this text.", "skill": "text-summarizer"}
+{"text": "Scan for unreachable generator expressions.", "skill": "dead-code-detector"}
+{"text": "Detect skewed distributions in the numeric data.", "skill": "csv-analyzer"}
+{"text": "Report any columns with high cardinality.", "skill": "csv-analyzer"}
+{"text": "Give me a summary report for the CSV dataset below.", "skill": "csv-analyzer"}
+{"text": "Identify high-complexity hotspots in the code below.", "skill": "code-complexity"}
+{"text": "Identify the most frequent values in the categorical columns.", "skill": "csv-analyzer"}
+{"text": "Which conditional branches are provably never taken?", "skill": "dead-code-detector"}
+{"text": "Analyse the CSV file and flag potential data entry errors.", "skill": "csv-analyzer"}
+{"text": "What are the recommendations made in this document?", "skill": "text-summarizer"}
+{"text": "Identify code that will never execute due to always-true conditions.", "skill": "dead-code-detector"}
+{"text": "Which parts of this module were commented out but left in?", "skill": "dead-code-detector"}
+{"text": "What is the average value per group in this CSV?", "skill": "csv-analyzer"}
+{"text": "Give me a concise overview of the following white paper.", "skill": "text-summarizer"}
+{"text": "Detect dead utility functions at the end of this file.", "skill": "dead-code-detector"}
+{"text": "How deeply nested are the conditionals in this snippet?", "skill": "code-complexity"}
+{"text": "Rank the complexity of each function in the file below.", "skill": "code-complexity"}
+{"text": "Summarise the following lecture notes for a student.", "skill": "text-summarizer"}
+{"text": "Flag all functions with cyclomatic complexity above 10.", "skill": "code-complexity"}
+{"text": "Summarize the following email thread.", "skill": "text-summarizer"}
+{"text": "Give me a plain-language summary of this legal document.", "skill": "text-summarizer"}
+{"text": "Is the control-flow graph for this function complex?", "skill": "code-complexity"}
+{"text": "Provide a complexity analysis including cyclomatic and cognitive metrics.", "skill": "code-complexity"}
+{"text": "Detect dead code in the following snippet.", "skill": "dead-code-detector"}
+{"text": "Summarise the following book chapter in five sentences.", "skill": "text-summarizer"}
+{"text": "Identify unused private methods in this class.", "skill": "dead-code-detector"}
+{"text": "Identify sparse columns in the dataset.", "skill": "csv-analyzer"}
+{"text": "Summarise the financial report below for a non-specialist audience.", "skill": "text-summarizer"}
+{"text": "Analyse the structural complexity and coupling of this module.", "skill": "code-complexity"}
+{"text": "List any code that is never reached after a break or return.", "skill": "dead-code-detector"}
+{"text": "Determine how hard it would be to test this function.", "skill": "code-complexity"}
+{"text": "Find any unused variables in this Python file.", "skill": "dead-code-detector"}
+{"text": "Find unused exception handlers in this try-except chain.", "skill": "dead-code-detector"}
+{"text": "Give a detailed complexity report for this utility class.", "skill": "code-complexity"}
+{"text": "Count the number of records for each category.", "skill": "csv-analyzer"}
+{"text": "Identify columns with constant values.", "skill": "csv-analyzer"}
+{"text": "Compute the variance for each numeric attribute.", "skill": "csv-analyzer"}
