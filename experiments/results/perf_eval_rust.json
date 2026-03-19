@@ -1,0 +1,215 @@
+{
+  "experiment": "perf_eval",
+  "description": "Standalone Rust micro-benchmarks (Criterion.rs): concurrent dispatch, JSON serialization, skill parsing",
+  "system_info": {
+    "os": "Linux",
+    "os_release": "6.14.0-1017-azure",
+    "machine": "x86_64",
+    "python": "3.12.3",
+    "cpu_count": 2,
+    "timestamp": "2026-03-19T00:23:21Z",
+    "git_sha": "2ac10f69b537fffbeade25c77966b89c3f0b752c"
+  },
+  "results": [
+    {
+      "benchmark": "concurrent_dispatch/tasks/1",
+      "mean_ns": 25860.87200194644,
+      "mean_ci_95_lower_ns": 24654.75099185597,
+      "mean_ci_95_upper_ns": 27178.226467995424,
+      "median_ns": 23276.42631948764,
+      "std_dev_ns": 6465.100871759278
+    },
+    {
+      "benchmark": "concurrent_dispatch/tasks/10",
+      "mean_ns": 88193.3098841205,
+      "mean_ci_95_lower_ns": 80238.29457714924,
+      "mean_ci_95_upper_ns": 96284.56493144005,
+      "median_ns": 61514.613230240546,
+      "std_dev_ns": 41127.58192654137
+    },
+    {
+      "benchmark": "concurrent_dispatch/tasks/100",
+      "mean_ns": 577279.3212893812,
+      "mean_ci_95_lower_ns": 519969.6868220069,
+      "mean_ci_95_upper_ns": 637215.8803166965,
+      "median_ns": 336466.4178459119,
+      "std_dev_ns": 301685.92109148507
+    },
+    {
+      "benchmark": "concurrent_dispatch/tasks/50",
+      "mean_ns": 314867.5784869152,
+      "mean_ci_95_lower_ns": 281689.8103246546,
+      "mean_ci_95_upper_ns": 348949.4363760512,
+      "median_ns": 174537.9514339827,
+      "std_dev_ns": 172798.38169214883
+    },
+    {
+      "benchmark": "concurrent_dispatch/tasks/500",
+      "mean_ns": 1653416.7756194938,
+      "mean_ci_95_lower_ns": 1583817.2769318162,
+      "mean_ci_95_upper_ns": 1725658.0002780831,
+      "median_ns": 1451961.9606224198,
+      "std_dev_ns": 365074.0895522367
+    },
+    {
+      "benchmark": "json_deserialization/reply_payload_as_value",
+      "mean_ns": 1278.630264844801,
+      "mean_ci_95_lower_ns": 1203.8815475092242,
+      "mean_ci_95_upper_ns": 1355.980691633364,
+      "median_ns": 1046.790218220598,
+      "std_dev_ns": 387.7530863892306
+    },
+    {
+      "benchmark": "json_deserialization/send_task_params",
+      "mean_ns": 2047.8704521595087,
+      "mean_ci_95_lower_ns": 2008.7748127484529,
+      "mean_ci_95_upper_ns": 2093.9987246635983,
+      "median_ns": 1984.4754756871034,
+      "std_dev_ns": 219.88887812745585
+    },
+    {
+      "benchmark": "json_deserialization/skill_request",
+      "mean_ns": 1759.546786201074,
+      "mean_ci_95_lower_ns": 1756.4244709207235,
+      "mean_ci_95_upper_ns": 1763.5601445955042,
+      "median_ns": 1755.6115442934788,
+      "std_dev_ns": 18.510468048386116
+    },
+    {
+      "benchmark": "json_roundtrip/send_task_params",
+      "mean_ns": 3951.7598925940297,
+      "mean_ci_95_lower_ns": 3693.3770919444323,
+      "mean_ci_95_upper_ns": 4247.9604126567365,
+      "median_ns": 3303.3628727013443,
+      "std_dev_ns": 1428.5151634276099
+    },
+    {
+      "benchmark": "json_roundtrip/skill_request",
+      "mean_ns": 2978.5370687529544,
+      "mean_ci_95_lower_ns": 2820.1006641220515,
+      "mean_ci_95_upper_ns": 3149.4520150123735,
+      "median_ns": 2616.0546192144566,
+      "std_dev_ns": 843.9907614470087
+    },
+    {
+      "benchmark": "json_serialization/send_task_params",
+      "mean_ns": 1168.4828099679405,
+      "mean_ci_95_lower_ns": 1165.620905181581,
+      "mean_ci_95_upper_ns": 1172.060386526581,
+      "median_ns": 1165.9035789977288,
+      "std_dev_ns": 16.593369593374945
+    },
+    {
+      "benchmark": "json_serialization/skill_request",
+      "mean_ns": 843.2726731453213,
+      "mean_ci_95_lower_ns": 826.0970346528351,
+      "mean_ci_95_upper_ns": 872.9774561091384,
+      "median_ns": 825.0505099173334,
+      "std_dev_ns": 130.5925538101305
+    },
+    {
+      "benchmark": "pending_map_ops/entries/10",
+      "mean_ns": 17847.47570435235,
+      "mean_ci_95_lower_ns": 17661.200035261096,
+      "mean_ci_95_upper_ns": 18053.856387423028,
+      "median_ns": 17244.816609977323,
+      "std_dev_ns": 1007.7989562109192
+    },
+    {
+      "benchmark": "pending_map_ops/entries/100",
+      "mean_ns": 187300.14061525147,
+      "mean_ci_95_lower_ns": 185465.41569608348,
+      "mean_ci_95_upper_ns": 189707.84978932494,
+      "median_ns": 184325.2142857143,
+      "std_dev_ns": 10975.714011370837
+    },
+    {
+      "benchmark": "pending_map_ops/entries/1000",
+      "mean_ns": 2075027.0145833334,
+      "mean_ci_95_lower_ns": 1982666.9985104166,
+      "mean_ci_95_upper_ns": 2177339.220697916,
+      "median_ns": 1885912.6041666665,
+      "std_dev_ns": 500660.91065838985
+    },
+    {
+      "benchmark": "skill_parsing_extract_tag/description",
+      "mean_ns": 322.27974448396543,
+      "mean_ci_95_lower_ns": 320.82624221111547,
+      "mean_ci_95_upper_ns": 323.89413868488873,
+      "median_ns": 320.82253084653416,
+      "std_dev_ns": 7.84547730077844
+    },
+    {
+      "benchmark": "skill_parsing_extract_tag/location",
+      "mean_ns": 469.1537116636963,
+      "mean_ci_95_lower_ns": 435.9816125653732,
+      "mean_ci_95_upper_ns": 503.9133167284954,
+      "median_ns": 357.76692937315636,
+      "std_dev_ns": 175.05649401912274
+    },
+    {
+      "benchmark": "skill_parsing_extract_tag/name",
+      "mean_ns": 373.4805319096212,
+      "mean_ci_95_lower_ns": 350.1611852774106,
+      "mean_ci_95_upper_ns": 397.1509915417141,
+      "median_ns": 384.0150170174812,
+      "std_dev_ns": 120.73757278983592
+    },
+    {
+      "benchmark": "skill_parsing_parse_agents_md/skills/10",
+      "mean_ns": 14470.960536464843,
+      "mean_ci_95_lower_ns": 14453.86438317771,
+      "mean_ci_95_upper_ns": 14490.486234325304,
+      "median_ns": 14430.366812865497,
+      "std_dev_ns": 94.12567117223445
+    },
+    {
+      "benchmark": "skill_parsing_parse_agents_md/skills/100",
+      "mean_ns": 149151.23056421574,
+      "mean_ci_95_lower_ns": 146083.03493081217,
+      "mean_ci_95_upper_ns": 153341.78238788052,
+      "median_ns": 144063.39906832296,
+      "std_dev_ns": 18899.68351234744
+    },
+    {
+      "benchmark": "skill_parsing_parse_agents_md/skills/2",
+      "mean_ns": 3069.7916913746385,
+      "mean_ci_95_lower_ns": 2950.9595328343667,
+      "mean_ci_95_upper_ns": 3208.1885049999983,
+      "median_ns": 2890.7094471778055,
+      "std_dev_ns": 666.8778864893601
+    },
+    {
+      "benchmark": "skill_parsing_parse_agents_md/skills/50",
+      "mean_ns": 73385.8155267224,
+      "mean_ci_95_lower_ns": 73011.51770051982,
+      "mean_ci_95_upper_ns": 74022.76360813447,
+      "median_ns": 72868.16666666666,
+      "std_dev_ns": 2814.057235712947
+    },
+    {
+      "benchmark": "skill_parsing_real_agents_md",
+      "mean_ns": 4304.105726423379,
+      "mean_ci_95_lower_ns": 4054.083463242133,
+      "mean_ci_95_upper_ns": 4567.8612572976,
+      "median_ns": 3669.0700985266203,
+      "std_dev_ns": 1317.3857454678512
+    },
+    {
+      "benchmark": "topic_name_from_category",
+      "mean_ns": 212.61303546281704,
+      "mean_ci_95_lower_ns": 198.3513038382472,
+      "mean_ci_95_upper_ns": 227.81463847787165,
+      "median_ns": 167.25446480702624,
+      "std_dev_ns": 75.2570700022034
+    },
+    {
+      "benchmark": "uuid_v4_generation",
+      "mean_ns": 1437.242394403521,
+      "mean_ci_95_lower_ns": 1358.3248898205634,
+      "mean_ci_95_upper_ns": 1522.1597157126728,
+      "median_ns": 1219.9405540965827,
+      "std_dev_ns": 420.1647598361383
+    }
+  ]
+}
